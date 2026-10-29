@@ -1,5 +1,35 @@
 const Product = require('../models/Product');
 const Review = require('../models/Review');
+const Order = require('../models/Order');
+
+/**
+ * Pure helper to verify if an author qualifies for a 'Verified Purchase' badge.
+ */
+const verifyReviewEligibility = (qualifyingOrders, targetProductId, userEmail = '', userName = '') => {
+  if (!qualifyingOrders || qualifyingOrders.length === 0) return false;
+  const targetIdStr = String(targetProductId).trim();
+  const cleanEmail = String(userEmail || '').trim().toLowerCase();
+  const cleanName = String(userName || '').trim().toLowerCase();
+
+  return qualifyingOrders.some(order => {
+    // Must be a valid delivered, shipped, or processing order
+    if (['cancelled', 'pending', 'refunded'].includes(order.orderStatus)) return false;
+
+    // Must contain target product
+    const hasProduct = (order.items || []).some(item => {
+      const pId = item.product ? String(item.product) : '';
+      const sku = item.sku || '';
+      return pId === targetIdStr || sku === targetIdStr;
+    });
+    if (!hasProduct) return false;
+
+    // Must match author
+    const orderEmail = order.customerInfo?.email ? String(order.customerInfo.email).trim().toLowerCase() : '';
+    const orderName = order.customerInfo?.name ? String(order.customerInfo.name).trim().toLowerCase() : '';
+
+    return (cleanEmail && orderEmail === cleanEmail) || (cleanName && orderName === cleanName);
+  });
+};
 
 // @desc    Get all active products with filters and sorting
 // @route   GET /api/products
@@ -174,13 +204,34 @@ const createReview = async (req, res, next) => {
       });
     }
 
+    const authorEmail = (req.body.authorEmail || (req.user ? req.user.email : '')).trim().toLowerCase();
+    
+    // Authoritatively check whether the reviewer placed a qualifying order for this formulation
+    let isVerified = false;
+    const orderMatchQuery = {
+      'items.product': product._id,
+      orderStatus: { $in: ['delivered', 'shipped', 'processing'] }
+    };
+    const orConditions = [];
+    if (req.user) orConditions.push({ customer: req.user._id });
+    if (authorEmail) orConditions.push({ 'customerInfo.email': authorEmail });
+    if (authorName) orConditions.push({ 'customerInfo.name': authorName.trim() });
+
+    if (orConditions.length > 0) {
+      orderMatchQuery.$or = orConditions;
+      const matchingOrder = await Order.findOne(orderMatchQuery);
+      if (matchingOrder) {
+        isVerified = true;
+      }
+    }
+
     const review = await Review.create({
       product: product._id,
       authorName: authorName.trim(),
       rating: Math.min(5, Math.max(1, parseInt(rating, 10) || 5)),
       headline: headline.trim(),
       comment: comment.trim(),
-      isVerified: true,
+      isVerified,
       moderationStatus: 'approved'
     });
 
@@ -200,5 +251,7 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
-  createReview
+  createReview,
+  verifyReviewEligibility
 };
+

@@ -61,6 +61,13 @@ export const initCheckout = () => {
         return;
       }
 
+      // Guard against synthetic preview items when API was offline
+      const hasPreviewItems = cart.items.some(item => !item.id || String(item.id).startsWith('preview_') || String(item.id).length !== 24);
+      if (hasPreviewItems) {
+        showError('Live catalog synchronization required. Preview formulation items cannot be placed into orders. Please remove preview items from your bag and refresh the shop catalog.');
+        return;
+      }
+
       // Collect customer details
       const customerInfo = {
         name: document.getElementById('checkout-name').value.trim(),

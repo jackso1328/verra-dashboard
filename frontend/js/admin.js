@@ -493,8 +493,8 @@ class AdminController {
                 </td>
                 <td><strong>${p.stockQuantity}</strong></td>
                 <td>${p.reorderThreshold}</td>
-                <td>${p.dailyRunRate || 1.1} units/day</td>
-                <td><strong>${p.estimatedDaysRemaining !== 999 ? `${p.estimatedDaysRemaining} days` : '>180 days'}</strong></td>
+                <td>${p.dailyRunRate !== undefined ? `${p.dailyRunRate} units/day` : '0 units/day'}</td>
+                <td><strong>${p.runwayDisplay || (p.estimatedDaysRemaining !== null ? `${p.estimatedDaysRemaining} days` : 'No recent sales')}</strong></td>
                 <td>₹${p.unitCost}</td>
                 <td>₹${(p.stockQuantity * p.unitCost).toLocaleString('en-IN')}</td>
                 <td><span class="badge ${badgeClass}">${priorityText}</span></td>
@@ -569,8 +569,8 @@ class AdminController {
         this.destroyChart('rfmDoughnut');
         this.activeCharts['rfmDoughnut'] = createDoughnutChart(
           'rfm-segments-chart',
-          ['Champions', 'Loyal Ritualists', 'Potential', 'New Patrons'],
-          [rfmSegments.champions, rfmSegments.loyal, rfmSegments.potential, rfmSegments.newCustomers]
+          ['Champions', 'Loyal Ritualists', 'Potential', 'At Risk', 'New Patrons'],
+          [rfmSegments.champions, rfmSegments.loyal, rfmSegments.potential, rfmSegments.atRisk || 0, rfmSegments.newCustomers]
         );
 
         // Top Patrons Table
@@ -582,7 +582,7 @@ class AdminController {
               <td>${c.email}</td>
               <td><span class="badge badge-forest">${c.orderCount} Orders</span></td>
               <td><strong>₹${c.totalSpent.toLocaleString('en-IN')}</strong></td>
-              <td>${new Date(c.lastOrderDate).toLocaleDateString()}</td>
+              <td>${c.recencyDays !== undefined ? `${c.recencyDays}d ago` : new Date(c.lastOrderDate).toLocaleDateString()}</td>
             </tr>
           `).join('');
         }

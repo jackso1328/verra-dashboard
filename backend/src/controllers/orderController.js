@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const InventoryMovement = require('../models/InventoryMovement');
+const mongoose = require('mongoose');
 
 // Generate unique order number (e.g. VR-2026-84920)
 const generateOrderNumber = () => {
@@ -8,19 +9,91 @@ const generateOrderNumber = () => {
   return `VR-2026-${randomDigits}`;
 };
 
+/**
+ * Pure helper to aggregate duplicate product entries in cart items.
+ * Validates ObjectId format and quantity.
+ */
+const aggregateCartItems = (rawItems) => {
+  if (!rawItems || !Array.isArray(rawItems) || rawItems.length === 0) {
+    throw new Error('Your cart is empty. Please add botanical oils before checkout.');
+  }
+
+  const map = new Map();
+
+  for (const item of rawItems) {
+    const rawId = item.productId || item.id || item.product;
+    if (!rawId) {
+      throw new Error('Cart item is missing a valid product identifier.');
+    }
+    const pId = String(rawId).trim();
+
+    if (!mongoose.Types.ObjectId.isValid(pId)) {
+      throw new Error(`Invalid product ID "${pId}". Live catalog synchronization required; preview items cannot be checked out.`);
+    }
+
+    const qty = parseInt(item.quantity, 10);
+    if (isNaN(qty) || qty <= 0) {
+      throw new Error('Invalid quantity specified in cart item.');
+    }
+
+    if (map.has(pId)) {
+      map.set(pId, map.get(pId) + qty);
+    } else {
+      map.set(pId, qty);
+    }
+  }
+
+  return Array.from(map.entries()).map(([productId, quantity]) => ({ productId, quantity }));
+};
+
+/**
+ * Pure helper to compute authoritative order totals.
+ * Tax (5% GST) is included in product retail price (Indian MRP standard).
+ * Net sales = grossSales - discountAmount.
+ * Free luxury shipping on net sales >= ₹1,500, else ₹99.
+ * Total amount to pay = net sales + shippingFee.
+ */
+const calculateCheckoutFinancials = (validatedItems, couponCode = null) => {
+  let grossSales = 0;
+  let totalCOGS = 0;
+
+  validatedItems.forEach(item => {
+    grossSales += item.subtotal;
+    totalCOGS += item.unitCost * item.quantity;
+  });
+
+  let discountAmount = 0;
+  const upperCode = couponCode ? String(couponCode).toUpperCase().trim() : '';
+  if (upperCode === 'VERRA10') {
+    discountAmount = Math.round(grossSales * 0.10);
+  } else if (upperCode === 'RITUAL15') {
+    discountAmount = Math.round(grossSales * 0.15);
+  }
+
+  const netProductSales = Math.max(0, grossSales - discountAmount);
+  const shippingFee = netProductSales >= 1500 || netProductSales === 0 ? 0 : 99;
+  // 5% GST included in retail price
+  const taxAmount = Math.round(netProductSales * 0.05);
+  const totalAmount = netProductSales + shippingFee;
+
+  return {
+    grossSales,
+    discountAmount,
+    netProductSales,
+    shippingFee,
+    taxAmount,
+    totalAmount,
+    totalCOGS
+  };
+};
+
 // @desc    Create a new order (Validated server-side against DB prices and stock)
 // @route   POST /api/orders
 // @access  Public / Customer (optionalAuth)
 const createOrder = async (req, res, next) => {
+  const decrementedItems = []; // Track for rollback in case of subsequent failures
   try {
     const { items, customerInfo, couponCode } = req.body;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Your cart is empty. Please add botanical oils before checkout.'
-      });
-    }
 
     if (!customerInfo || !customerInfo.name || !customerInfo.email || !customerInfo.street || !customerInfo.city || !customerInfo.state || !customerInfo.postalCode) {
       return res.status(400).json({
@@ -29,68 +102,50 @@ const createOrder = async (req, res, next) => {
       });
     }
 
-    // Server-side authoritative validation of items, prices, and stock
-    let grossSales = 0;
-    let totalCOGS = 0;
-    const validatedItems = [];
+    // 1. Aggregate duplicate product lines and validate IDs
+    let aggregated;
+    try {
+      aggregated = aggregateCartItems(items);
+    } catch (aggErr) {
+      return res.status(400).json({
+        success: false,
+        message: aggErr.message
+      });
+    }
 
-    for (const item of items) {
-      const product = await Product.findById(item.productId || item.id);
+    // 2. Validate products and authoritative prices/costs from DB
+    const validatedItems = [];
+    for (const entry of aggregated) {
+      const product = await Product.findById(entry.productId);
       if (!product || !product.isActive) {
         return res.status(400).json({
           success: false,
-          message: `Product "${item.name || 'Selected item'}" is currently unavailable.`
+          message: `Product is currently unavailable.`
         });
       }
 
-      const qty = parseInt(item.quantity, 10);
-      if (isNaN(qty) || qty <= 0) {
+      if (product.stockQuantity < entry.quantity) {
         return res.status(400).json({
           success: false,
-          message: `Invalid quantity specified for ${product.name}.`
+          message: `Insufficient stock for ${product.name}. Requested ${entry.quantity} units, but only ${product.stockQuantity} units available.`
         });
       }
 
-      if (product.stockQuantity < qty) {
-        return res.status(400).json({
-          success: false,
-          message: `Insufficient stock for ${product.name}. Only ${product.stockQuantity} units available.`
-        });
-      }
-
-      const itemSubtotal = product.price * qty;
-      const itemCOGS = product.unitCost * qty;
-
-      grossSales += itemSubtotal;
-      totalCOGS += itemCOGS;
-
+      const itemSubtotal = product.price * entry.quantity;
       validatedItems.push({
         product: product._id,
         name: product.name,
         sku: product.sku,
         sizeMl: product.sizeMl,
-        quantity: qty,
+        quantity: entry.quantity,
         unitPrice: product.price,
         unitCost: product.unitCost, // Snapshot of cost at sale
         subtotal: itemSubtotal
       });
     }
 
-    // Calculate discounts & shipping
-    let discountAmount = 0;
-    if (couponCode && couponCode.toUpperCase().trim() === 'VERRA10') {
-      discountAmount = Math.round(grossSales * 0.10); // 10% botanical welcome discount
-    } else if (couponCode && couponCode.toUpperCase().trim() === 'RITUAL15') {
-      discountAmount = Math.round(grossSales * 0.15);
-    }
-
-    // Free shipping on orders over ₹1,500, else ₹99 flat luxury courier fee
-    const shippingFee = (grossSales - discountAmount) >= 1500 ? 0 : 99;
-    
-    // 5% GST included or calculated
-    const taxableAmount = (grossSales - discountAmount);
-    const taxAmount = Math.round(taxableAmount * 0.05);
-    const totalAmount = taxableAmount + shippingFee;
+    // 3. Reconcile financials
+    const financials = calculateCheckoutFinancials(validatedItems, couponCode);
 
     // Detect delivery region based on state
     const state = customerInfo.state.toLowerCase();
@@ -105,42 +160,74 @@ const createOrder = async (req, res, next) => {
       region = 'Central India';
     }
 
-    // Create Order Record
-    const orderNumber = generateOrderNumber();
-    const order = await Order.create({
-      orderNumber,
-      customer: req.user ? req.user._id : null,
-      customerInfo,
-      items: validatedItems,
-      grossSales,
-      discountAmount,
-      couponCode: couponCode ? couponCode.toUpperCase().trim() : null,
-      shippingFee,
-      taxAmount,
-      totalAmount,
-      totalCOGS,
-      paymentStatus: 'paid', // Demonstration checkout marked as paid
-      paymentMethod: 'Demonstration Luxury Gateway',
-      orderStatus: 'processing',
-      salesChannel: 'Storefront Online',
-      region,
-      orderDate: new Date()
-    });
-
-    // Safely decrement stock and record inventory movement
+    // 4. Conditional atomic stock decrement with rollback guarantee
     for (const vItem of validatedItems) {
-      const updatedProduct = await Product.findByIdAndUpdate(
-        vItem.product,
+      const updatedProduct = await Product.findOneAndUpdate(
+        { _id: vItem.product, stockQuantity: { $gte: vItem.quantity } },
         { $inc: { stockQuantity: -vItem.quantity } },
         { new: true }
       );
 
-      await InventoryMovement.create({
+      if (!updatedProduct) {
+        // Atomic decrement failed: another checkout acquired the remaining stock
+        // Rollback all already decremented items
+        for (const rolled of decrementedItems) {
+          await Product.findByIdAndUpdate(rolled.product, { $inc: { stockQuantity: rolled.quantity } });
+        }
+        return res.status(400).json({
+          success: false,
+          message: `Stock reservation failed for ${vItem.name}. The inventory level changed during checkout. Please try again.`
+        });
+      }
+
+      decrementedItems.push({
         product: vItem.product,
-        movementType: 'sale',
-        quantityChange: -vItem.quantity,
+        name: vItem.name,
+        quantity: vItem.quantity,
         previousStock: updatedProduct.stockQuantity + vItem.quantity,
-        newStock: updatedProduct.stockQuantity,
+        newStock: updatedProduct.stockQuantity
+      });
+    }
+
+    // 5. Create Order Record
+    const orderNumber = generateOrderNumber();
+    let order;
+    try {
+      order = await Order.create({
+        orderNumber,
+        customer: req.user ? req.user._id : null,
+        customerInfo,
+        items: validatedItems,
+        grossSales: financials.grossSales,
+        discountAmount: financials.discountAmount,
+        couponCode: couponCode ? String(couponCode).toUpperCase().trim() : null,
+        shippingFee: financials.shippingFee,
+        taxAmount: financials.taxAmount,
+        totalAmount: financials.totalAmount,
+        totalCOGS: financials.totalCOGS,
+        paymentStatus: 'paid', // Demonstration checkout marked as paid
+        paymentMethod: 'Demonstration Luxury Gateway',
+        orderStatus: 'processing',
+        salesChannel: 'Storefront Online',
+        region,
+        orderDate: new Date()
+      });
+    } catch (orderCreateErr) {
+      // Rollback stock decrements if order creation fails
+      for (const rolled of decrementedItems) {
+        await Product.findByIdAndUpdate(rolled.product, { $inc: { stockQuantity: rolled.quantity } });
+      }
+      throw orderCreateErr;
+    }
+
+    // 6. Record Inventory Movements
+    for (const dec of decrementedItems) {
+      await InventoryMovement.create({
+        product: dec.product,
+        movementType: 'sale',
+        quantityChange: -dec.quantity,
+        previousStock: dec.previousStock,
+        newStock: dec.newStock,
         reason: `Customer order ${orderNumber}`,
         relatedOrder: order._id,
         performedBy: 'Checkout Service'
@@ -153,9 +240,20 @@ const createOrder = async (req, res, next) => {
       data: order
     });
   } catch (error) {
+    // Defensive rollback
+    if (decrementedItems.length > 0) {
+      for (const rolled of decrementedItems) {
+        try {
+          await Product.findByIdAndUpdate(rolled.product, { $inc: { stockQuantity: rolled.quantity } });
+        } catch (e) {
+          console.error('Failed to rollback item stock:', rolled.product, e);
+        }
+      }
+    }
     next(error);
   }
 };
+
 
 // @desc    Get customer's own order history
 // @route   GET /api/orders/my-orders
@@ -265,5 +363,8 @@ module.exports = {
   createOrder,
   getMyOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  aggregateCartItems,
+  calculateCheckoutFinancials
 };
+

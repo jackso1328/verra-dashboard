@@ -92,19 +92,23 @@ export const initStore = async () => {
     categoryFilter.value = initialCategory;
   }
 
+  let isPreviewCatalog = false;
   try {
     const res = await api.get('products');
     if (res.success && res.data && res.data.length > 0) {
       allProducts = res.data;
       renderProducts(allProducts);
     } else {
-      allProducts = SAMPLE_PREVIEW_PRODUCTS;
-      renderProducts(allProducts);
+      isPreviewCatalog = true;
+      allProducts = SAMPLE_PREVIEW_PRODUCTS.map(p => ({ ...p, isPreview: true }));
+      renderProducts(allProducts, true);
     }
   } catch (error) {
-    allProducts = SAMPLE_PREVIEW_PRODUCTS;
-    renderProducts(allProducts);
+    isPreviewCatalog = true;
+    allProducts = SAMPLE_PREVIEW_PRODUCTS.map(p => ({ ...p, isPreview: true }));
+    renderProducts(allProducts, true);
   }
+
 
   // Filter and Search Engine
   const applyFilters = () => {
@@ -192,9 +196,9 @@ export const initStore = async () => {
     return `<span class="product-badge-overlay badge badge-forest">${product.category}</span>`;
   }
 
-  function renderProducts(products) {
+  function renderProducts(products, isPreview = false) {
     if (countIndicator) {
-      countIndicator.textContent = `Showing ${products.length} botanical formulation${products.length === 1 ? '' : 's'}`;
+      countIndicator.textContent = `Showing ${products.length} botanical formulation${products.length === 1 ? '' : 's'}${isPreview ? ' (Catalog Offline Preview)' : ''}`;
     }
 
     if (products.length === 0) {
@@ -209,16 +213,26 @@ export const initStore = async () => {
       return;
     }
 
-    productGrid.innerHTML = products.map(product => {
+    const previewBanner = isPreview ? `
+      <div style="grid-column: 1/-1; background: var(--color-surface); border: 1px solid var(--color-gold); border-radius: var(--radius-md); padding: 18px 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="max-width: 780px;">
+          <h4 style="color: var(--color-forest-dark); font-size: 1rem; margin-bottom: 4px;">✦ Catalog Preview Mode — Live API Sync Required</h4>
+          <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin: 0;">Live database catalog is currently synchronizing. Synthetic preview formulations are displayed for viewing. Checkout is guarded until the backend live catalog connects.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.reload()">Retry Live Connection</button>
+      </div>
+    ` : '';
+
+    productGrid.innerHTML = previewBanner + products.map(product => {
       const isSaved = wishlist.isInWishlist(product._id);
-      const isLow = product.stockQuantity <= product.reorderThreshold && product.stockQuantity > 0;
       const isOutOfStock = product.stockQuantity === 0;
+      const isPreviewItem = Boolean(product.isPreview || String(product._id).startsWith('preview_'));
 
       return `
         <div class="product-card" data-id="${product._id}">
           <div class="product-image-container" onclick="window.location.href='/product.html?id=${product._id}'">
             <img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='/assets/images/hero_editorial.jpg'">
-            ${getProductBadge(product)}
+            ${isPreviewItem ? '<span class="product-badge-overlay badge badge-gold">Catalog Preview</span>' : getProductBadge(product)}
             <button class="wishlist-toggle-btn ${isSaved ? 'active' : ''}" data-id="${product._id}" title="${isSaved ? 'Remove from Saved' : 'Save to Ritual Wishlist'}" onclick="event.stopPropagation();">
               ${isSaved
                 ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="var(--color-gold)" stroke="var(--color-gold)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`
@@ -234,16 +248,17 @@ export const initStore = async () => {
             <p class="product-desc">${product.description}</p>
             <div class="product-footer">
               <div class="product-price">₹${product.price.toLocaleString('en-IN')}</div>
-              <button class="btn btn-primary btn-sm add-to-cart-btn" ${isOutOfStock ? 'disabled' : ''} data-product='${JSON.stringify({
+              <button class="btn btn-primary btn-sm add-to-cart-btn" ${isOutOfStock || isPreviewItem ? 'disabled' : ''} title="${isPreviewItem ? 'Live catalog sync required for checkout' : ''}" data-product='${JSON.stringify({
                 _id: product._id,
                 name: product.name,
                 price: product.price,
                 sizeMl: product.sizeMl,
                 image: product.image,
                 sku: product.sku,
-                stockQuantity: product.stockQuantity
+                stockQuantity: product.stockQuantity,
+                isPreview: isPreviewItem
               })}'>
-                ${isOutOfStock ? 'Sold Out' : 'Add to Bag'}
+                ${isOutOfStock ? 'Sold Out' : (isPreviewItem ? 'Preview Only' : 'Add to Bag')}
               </button>
             </div>
           </div>
@@ -256,6 +271,10 @@ export const initStore = async () => {
       button.addEventListener('click', (e) => {
         e.stopPropagation();
         const productData = JSON.parse(button.getAttribute('data-product'));
+        if (productData.isPreview || String(productData._id).startsWith('preview_')) {
+          alert('Live catalog synchronization is required. Preview formulations cannot be placed into orders until the live database is reached.');
+          return;
+        }
         cart.addItem(productData, 1);
         
         // Micro-interaction button feedback
@@ -270,6 +289,7 @@ export const initStore = async () => {
         }, 1200);
       });
     });
+
 
     // Attach Wishlist Listeners
     productGrid.querySelectorAll('.wishlist-toggle-btn').forEach(btn => {

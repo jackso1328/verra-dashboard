@@ -247,7 +247,7 @@
 
             <!-- Review Submission Modal Form -->
             <div id="review-modal-container" style="display: none; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 32px; box-shadow: var(--shadow-card);">
-              <h3 style="font-size: 1.2rem; color: var(--color-forest-dark); margin-bottom: 8px;">Leave a Verified Botanical Review</h3>
+              <h3 style="font-size: 1.2rem; color: var(--color-forest-dark); margin-bottom: 8px;">Leave a Botanical Review</h3>
               <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 20px;">Share how this formulation transformed your scalp or hair ritual.</p>
               <form id="product-review-form">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -286,7 +286,9 @@
                 <div class="card" style="padding: 24px;">
                   <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:var(--color-gold); font-size:1.1rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                    <span class="badge badge-forest" style="font-size:0.7rem;">Verified Patron</span>
+                    ${r.isVerified 
+                      ? '<span class="badge badge-forest" style="font-size:0.7rem;">Verified Purchase</span>' 
+                      : '<span class="badge" style="font-size:0.7rem; background: var(--color-border); color: var(--color-taupe-dark);">Client Review</span>'}
                   </div>
                   <h4 style="font-size: 1rem; margin-bottom: 8px; color: var(--color-forest-dark);">${r.headline}</h4>
                   <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 12px;">"${r.comment}"</p>
@@ -444,10 +446,13 @@
                   const newCard = document.createElement('div');
                   newCard.className = 'card';
                   newCard.style.padding = '24px';
+                  const isVerifiedReview = res.data && res.data.isVerified;
                   newCard.innerHTML = `
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                       <div style="color:var(--color-gold); font-size:1.1rem;">${'★'.repeat(payload.rating)}${'☆'.repeat(5 - payload.rating)}</div>
-                      <span class="badge badge-forest" style="font-size:0.7rem;">Verified Patron</span>
+                      ${isVerifiedReview 
+                        ? '<span class="badge badge-forest" style="font-size:0.7rem;">Verified Purchase</span>' 
+                        : '<span class="badge" style="font-size:0.7rem; background: var(--color-border); color: var(--color-taupe-dark);">Client Review</span>'}
                     </div>
                     <h4 style="font-size: 1rem; margin-bottom: 8px; color: var(--color-forest-dark);">${payload.headline}</h4>
                     <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 12px;">"${payload.comment}"</p>

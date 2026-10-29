@@ -268,7 +268,7 @@ export const createForecastChart = (canvasId, historicalData, forecastData) => {
           pointHoverRadius: 7
         },
         {
-          label: 'Upper Confidence Limit (+7.5%)',
+          label: 'Upper Empirical Estimate (+7.5%)',
           data: upperSeries,
           borderColor: 'rgba(198, 170, 114, 0.4)',
           backgroundColor: 'transparent',
@@ -277,7 +277,7 @@ export const createForecastChart = (canvasId, historicalData, forecastData) => {
           pointRadius: 0
         },
         {
-          label: 'Lower Confidence Limit (-7.5%)',
+          label: 'Lower Empirical Estimate (-7.5%)',
           data: lowerSeries,
           borderColor: 'rgba(198, 170, 114, 0.4)',
           backgroundColor: 'transparent',
