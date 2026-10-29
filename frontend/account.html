@@ -60,7 +60,7 @@
       </div>
 
       <!-- Order History Section -->
-      <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 40px;">
         <div style="padding: 20px 24px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
           <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Your Ritual Order History</h3>
           <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Amounts shown in INR (₹)</span>
@@ -82,6 +82,20 @@
               <!-- Loaded dynamically via account.js -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Saved Rituals (Wishlist) Section -->
+      <div class="card" style="padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <span class="section-tag">Saved Botanical Blends</span>
+            <h3 style="font-size: 1.2rem; color: var(--color-forest-dark); margin: 0;">Your Ritual Wishlist</h3>
+          </div>
+          <a href="/shop.html" class="btn btn-secondary btn-sm">Explore Collection</a>
+        </div>
+        <div id="account-wishlist-grid" class="product-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+          <!-- Loaded dynamically via account.js -->
         </div>
       </div>
 

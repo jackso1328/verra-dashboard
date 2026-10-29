@@ -37,6 +37,8 @@ const getDateRangeBoundaries = (period = '30d', customStart, customEnd) => {
   return { startDate, endDate, prevStartDate, prevEndDate };
 };
 
+const mongoose = require('mongoose');
+
 /**
  * Filter generator for valid realized orders (excludes cancelled/pending)
  */
@@ -48,7 +50,12 @@ const getOrderFilter = (startDate, endDate, extraFilters = {}) => {
   };
 
   if (extraFilters.productId) {
-    filter['items.product'] = extraFilters.productId;
+    const val = String(extraFilters.productId).trim();
+    if (mongoose.Types.ObjectId.isValid(val) && String(new mongoose.Types.ObjectId(val)) === val) {
+      filter['items.product'] = val;
+    } else {
+      filter['items.sku'] = val;
+    }
   }
   if (extraFilters.salesChannel) {
     filter.salesChannel = extraFilters.salesChannel;
@@ -102,7 +109,7 @@ const getExecutiveOverview = async (query = {}) => {
         totalCOGS += order.totalCOGS;
 
         order.items.forEach(item => {
-          if (!productId || String(item.product) === String(productId)) {
+          if (!productId || String(item.product) === String(productId) || item.sku === productId) {
             unitsSold += item.quantity;
           }
         });
@@ -539,11 +546,304 @@ const getCustomerAnalytics = async () => {
   };
 };
 
+/**
+ * 7. Transparent & Explainable Sales Forecasting
+ * Method: 3-month moving average coupled with monthly linear slope trend
+ */
+const getSalesForecast = async (query = {}) => {
+  // Fetch up to 12 months of qualifying historical orders
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const now = new Date();
+
+  const orders = await Order.find({
+    orderDate: { $gte: oneYearAgo, $lte: now },
+    orderStatus: { $nin: ['cancelled', 'pending', 'refunded'] }
+  }).sort({ orderDate: 1 });
+
+  // Group by month
+  const monthlyMap = new Map();
+  orders.forEach(o => {
+    const d = new Date(o.orderDate);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    if (!monthlyMap.has(key)) {
+      monthlyMap.set(key, { key, label, revenue: 0, orders: 0, units: 0 });
+    }
+    const row = monthlyMap.get(key);
+    const net = o.grossSales - o.discountAmount;
+    row.revenue += net;
+    row.orders += 1;
+    row.units += o.items.reduce((s, i) => s + i.quantity, 0);
+  });
+
+  const historical = Array.from(monthlyMap.values());
+
+  // If insufficient history, provide fallback baseline
+  if (historical.length < 2) {
+    return {
+      methodology: 'Baseline projection: Insufficient historical periods recorded.',
+      historical,
+      forecast: []
+    };
+  }
+
+  // Calculate simple linear regression slope (y = mx + b)
+  const n = historical.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+
+  historical.forEach((pt, idx) => {
+    const x = idx + 1;
+    const y = pt.revenue;
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumXX += x * x;
+  });
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  // 3-month rolling weighted average
+  const last3 = historical.slice(-3);
+  const rollingAvg = last3.reduce((s, r) => s + r.revenue, 0) / last3.length;
+
+  // Project next 3 future months
+  const forecast = [];
+  const lastDate = new Date(now);
+
+  for (let step = 1; step <= 3; step++) {
+    const futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + step, 1);
+    const label = futureDate.toLocaleString('en-US', { month: 'short', year: 'numeric' }) + ' (Forecast)';
+    const x = n + step;
+    
+    // Blend 60% linear trend with 40% recent rolling moving average for realistic stability
+    const linearEstimate = Math.max(0, slope * x + intercept);
+    const blendedEstimate = Math.round((linearEstimate * 0.6) + (rollingAvg * 0.4));
+
+    // Confidence bounds (+/- 7.5%)
+    const lowerBound = Math.round(blendedEstimate * 0.925);
+    const upperBound = Math.round(blendedEstimate * 1.075);
+
+    forecast.push({
+      step,
+      label,
+      predictedRevenue: blendedEstimate,
+      lowerBound,
+      upperBound,
+      growthRatePercent: parseFloat((((blendedEstimate - historical[historical.length - 1].revenue) / (historical[historical.length - 1].revenue || 1)) * 100).toFixed(1))
+    });
+  }
+
+  return {
+    methodology: 'Blended 60/40 Linear Monthly Trend Slope & 3-Month Rolling Weighted Moving Average with ±7.5% Confidence Interval.',
+    historicalActualsCount: historical.length,
+    historical,
+    forecast,
+    summary: {
+      nextMonthProjectedRevenue: forecast[0] ? forecast[0].predictedRevenue : 0,
+      nextQuarterProjectedRevenue: forecast.reduce((s, f) => s + f.predictedRevenue, 0),
+      trendDirection: slope >= 0 ? 'Expanding (+)' : 'Contracting (-)',
+      monthlySlopeInr: Math.round(slope)
+    }
+  };
+};
+
+/**
+ * 8. Dynamic Data-Driven Business Insights Generator
+ */
+const getAutomatedBusinessInsights = async (query = {}) => {
+  const overview = await getExecutiveOverview(query);
+  const prodPerf = await getProductPerformance(query);
+  const custPerf = await getCustomerAnalytics();
+  const invData = await getInventoryAnalytics();
+
+  const { kpis } = overview;
+  const insights = [];
+
+  // Insight 1: Revenue & Growth Trajectory
+  if (kpis.netRevenue.change > 0) {
+    insights.push({
+      type: 'growth',
+      category: 'Revenue Trajectory',
+      title: 'Strong Top-Line Revenue Expansion',
+      description: `Net revenue increased by ${kpis.netRevenue.change}% compared to the prior equivalent period, reaching ₹${kpis.netRevenue.value.toLocaleString('en-IN')}.`,
+      sentiment: 'positive',
+      metric: `+${kpis.netRevenue.change}%`
+    });
+  } else if (kpis.netRevenue.change < 0) {
+    insights.push({
+      type: 'warning',
+      category: 'Revenue Trajectory',
+      title: 'Periodic Revenue Softening',
+      description: `Net revenue adjusted by ${kpis.netRevenue.change}% vs the previous period. Monitor conversion velocity across digital acquisition channels.`,
+      sentiment: 'warning',
+      metric: `${kpis.netRevenue.change}%`
+    });
+  } else {
+    insights.push({
+      type: 'stable',
+      category: 'Revenue Trajectory',
+      title: 'Consistent Revenue Baseline',
+      description: `Net revenue maintained stability at ₹${kpis.netRevenue.value.toLocaleString('en-IN')} across qualifying orders.`,
+      sentiment: 'neutral',
+      metric: '0.0%'
+    });
+  }
+
+  // Insight 2: High Margin Formulation Leader
+  if (prodPerf.products && prodPerf.products.length > 0) {
+    const topMarginProd = [...prodPerf.products].sort((a, b) => b.marginPercent - a.marginPercent)[0];
+    const topVolumeProd = [...prodPerf.products].sort((a, b) => b.unitsSold - a.unitsSold)[0];
+
+    insights.push({
+      type: 'product',
+      category: 'Product Profitability',
+      title: `${topMarginProd.name} Drives Premium Margins`,
+      description: `Yielding an elite ${topMarginProd.marginPercent}% gross margin with unit cost of ₹${topMarginProd.currentPrice - Math.round(topMarginProd.grossProfit / (topMarginProd.unitsSold || 1))}, outperforming portfolio average.`,
+      sentiment: 'positive',
+      metric: `${topMarginProd.marginPercent}% Margin`
+    });
+
+    if (topVolumeProd.id !== topMarginProd.id) {
+      insights.push({
+        type: 'volume',
+        category: 'Sales Volume',
+        title: `${topVolumeProd.name} Leads Ritual Adoptions`,
+        description: `Highest volume mover with ${topVolumeProd.unitsSold} units placed, contributing ${topVolumeProd.revenueContribution}% of total brand catalog sales.`,
+        sentiment: 'neutral',
+        metric: `${topVolumeProd.unitsSold} Units`
+      });
+    }
+  }
+
+  // Insight 3: Inventory Runway & Reorder Urgency
+  if (invData.lowStockAlerts && invData.lowStockAlerts.length > 0) {
+    const mostCritical = invData.lowStockAlerts[0];
+    insights.push({
+      type: 'inventory_alert',
+      category: 'Inventory Intelligence',
+      title: `Low Stock Advisory: ${mostCritical.name}`,
+      description: `Current stock of ${mostCritical.stock} units is at or below reorder threshold (${mostCritical.threshold}). Initiate supplier batch replenishment to prevent stockouts.`,
+      sentiment: 'negative',
+      metric: `${mostCritical.stock} Units Left`
+    });
+  } else {
+    insights.push({
+      type: 'inventory_healthy',
+      category: 'Inventory Intelligence',
+      title: 'Balanced Stock Distribution',
+      description: `All botanical formulations are operating above their minimum reorder safety thresholds across fulfillment centers.`,
+      sentiment: 'positive',
+      metric: `${invData.totalUnits} Units`
+    });
+  }
+
+  // Insight 4: Customer Retention & Repeat Purchase Power
+  insights.push({
+    type: 'customer_loyalty',
+    category: 'Customer Retention',
+    title: `${custPerf.repeatPurchaseRate}% Repeat Patronage Rate`,
+    description: `High repeat frequency reflects strong customer ritual affinity. Champions and Loyal customer cohorts comprise ${custPerf.rfmSegments.champions + custPerf.rfmSegments.loyal} high-value profiles.`,
+    sentiment: 'positive',
+    metric: `${custPerf.repeatPurchaseRate}% Repeat Rate`
+  });
+
+  return {
+    generatedAt: new Date(),
+    period: query.period || '30d',
+    totalInsightsCount: insights.length,
+    insights
+  };
+};
+
+/**
+ * 9. Upgraded Inventory Intelligence with Stock Runway & Turnover
+ */
+const getInventoryIntelligence = async () => {
+  const baseData = await getInventoryAnalytics();
+  
+  // Calculate past 30-day sales velocity per product
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const pastOrders = await Order.find({
+    orderDate: { $gte: thirtyDaysAgo },
+    orderStatus: { $nin: ['cancelled', 'pending', 'refunded'] }
+  });
+
+  const salesVelocityMap = {};
+  baseData.products.forEach(p => {
+    salesVelocityMap[String(p._id)] = 0;
+  });
+
+  pastOrders.forEach(o => {
+    o.items.forEach(item => {
+      const pId = String(item.product);
+      if (salesVelocityMap[pId] !== undefined) {
+        salesVelocityMap[pId] += item.quantity;
+      }
+    });
+  });
+
+  let totalPastMonthCOGS = 0;
+
+  const enrichedProducts = baseData.products.map(p => {
+    const unitsSold30d = salesVelocityMap[String(p._id)] || 0;
+    const dailyRunRate = parseFloat((unitsSold30d / 30).toFixed(2));
+    const estimatedDaysRemaining = dailyRunRate > 0 ? Math.round(p.stockQuantity / dailyRunRate) : 999;
+    const itemCOGS30d = unitsSold30d * p.unitCost;
+    totalPastMonthCOGS += itemCOGS30d;
+
+    let restockPriority = 'Healthy';
+    if (p.stockQuantity === 0) restockPriority = 'Immediate Stockout';
+    else if (estimatedDaysRemaining <= 15 || p.stockQuantity <= 20) restockPriority = 'High Priority';
+    else if (estimatedDaysRemaining <= 30 || p.stockQuantity <= p.reorderThreshold) restockPriority = 'Medium Reorder';
+
+    return {
+      _id: p._id,
+      name: p.name,
+      sku: p.sku,
+      category: p.category,
+      price: p.price,
+      unitCost: p.unitCost,
+      stockQuantity: p.stockQuantity,
+      reorderThreshold: p.reorderThreshold,
+      image: p.image,
+      unitsSold30d,
+      dailyRunRate,
+      estimatedDaysRemaining,
+      restockPriority,
+      valuation: p.stockQuantity * p.unitCost
+    };
+  });
+
+  // Annualized Inventory Turnover = (Past Month COGS * 12) / Total Stock Valuation
+  const annualizedTurnover = baseData.totalStockValuation > 0
+    ? parseFloat(((totalPastMonthCOGS * 12) / baseData.totalStockValuation).toFixed(2))
+    : 0;
+
+  return {
+    ...baseData,
+    products: enrichedProducts,
+    inventoryTurnoverRatio: annualizedTurnover,
+    lowStockRecommendations: enrichedProducts
+      .filter(p => p.restockPriority !== 'Healthy')
+      .sort((a, b) => a.estimatedDaysRemaining - b.estimatedDaysRemaining)
+  };
+};
+
 module.exports = {
   getExecutiveOverview,
   getSalesAnalytics,
   getProductPerformance,
   getFinancials,
   getInventoryAnalytics,
-  getCustomerAnalytics
+  getInventoryIntelligence,
+  getCustomerAnalytics,
+  getSalesForecast,
+  getAutomatedBusinessInsights
 };

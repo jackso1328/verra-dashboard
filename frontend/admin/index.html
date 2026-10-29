@@ -102,6 +102,10 @@
           <span id="db-status-dot" class="db-status-dot"></span>
           <span id="db-status-text">MongoDB: verra_bi</span>
         </div>
+        <button id="open-glossary-btn" class="btn btn-secondary btn-sm" style="display:flex; align-items:center; gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          KPI Glossary
+        </button>
         <a href="/shop.html" class="btn btn-secondary btn-sm" target="_blank">Storefront</a>
       </div>
     </header>
@@ -133,7 +137,7 @@
           <button id="apply-custom-btn" class="btn btn-primary btn-sm">Apply</button>
         </div>
 
-        <div class="filter-group" style="margin-left: auto;">
+        <div class="filter-group" style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
           <select id="filter-product-select" class="form-select" style="padding: 6px 12px; font-size: 0.82rem; width: auto;">
             <option value="all">All Botanical Formulations</option>
             <option value="VR-RRO-050">Root Revival Scalp Oil</option>
@@ -141,6 +145,7 @@
             <option value="VR-BNO-100">Botanical Nourish Oil</option>
             <option value="VR-CST-100">Coco Silk Treatment</option>
           </select>
+          <button id="reset-overview-filters" class="btn btn-secondary btn-sm" style="padding: 6px 10px; font-size: 0.8rem;">Reset</button>
         </div>
       </div>
 
@@ -269,8 +274,28 @@
 
       </div>
 
+      <!-- Dynamic Automated Business Insights Panel -->
+      <div class="chart-card" style="margin-bottom: 28px; background: linear-gradient(135deg, #FFFFFF 0%, #F9F8F3 100%); border-left: 4px solid var(--color-gold);">
+        <div class="chart-header" style="border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 16px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--color-gold); font-size:1.1rem;">✦</span>
+              <h3 class="chart-title" style="margin:0;">Dynamic Automated Business Intelligence Insights</h3>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Real-time algorithmic observations generated from active query boundaries</span>
+          </div>
+          <span class="badge badge-gold" id="insights-count-badge">Live Intelligence</span>
+        </div>
+        <div id="automated-insights-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+          <div style="padding: 20px; text-align: center; color: var(--color-text-secondary); grid-column: 1/-1;">
+            <div class="spinner"></div>
+            <p style="margin-top: 8px;">Synthesizing analytical observations...</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Trend Visualization -->
-      <div class="chart-card">
+      <div class="chart-card" style="margin-bottom: 28px;">
         <div class="chart-header">
           <div>
             <h3 class="chart-title">Sales Trajectory & Profit Realization</h3>
@@ -283,6 +308,69 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- KPI Glossary & Calculation Definitions Modal -->
+  <div class="modal-overlay" id="kpi-glossary-modal">
+    <div class="modal-box" style="max-width: 680px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin: 0; font-size: 1.25rem; color: var(--color-forest-dark);">Executive BI Metric Definitions & Formulas</h3>
+          <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Academic Business Intelligence Standards</span>
+        </div>
+        <button id="close-glossary-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <h4 style="color: var(--color-forest); margin-bottom: 4px;">1. Gross Sales vs Net Revenue</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+            <strong>Gross Sales</strong> = Sum of all product order items before discounts (<code>UnitPrice × Quantity</code>).<br>
+            <strong>Net Revenue</strong> = <code>Gross Sales - Order Discounts (VERRA10/RITUAL15)</code>. Excludes cancelled and pending orders.
+          </p>
+        </div>
+
+        <div style="margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <h4 style="color: var(--color-forest); margin-bottom: 4px;">2. COGS & Gross Profit</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+            <strong>Cost of Goods Sold (COGS)</strong> = Sum of <code>UnitCostSnapshot × Quantity</code> for qualifying fulfilled orders.<br>
+            <strong>Gross Profit</strong> = <code>Net Revenue - COGS</code>.<br>
+            <strong>Gross Margin %</strong> = <code>(Gross Profit ÷ Net Revenue) × 100</code>.
+          </p>
+        </div>
+
+        <div style="margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <h4 style="color: var(--color-forest); margin-bottom: 4px;">3. Net Operating Profit & OpEx</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+            <strong>Operating Expenses (OpEx)</strong> = Sum of categorized expenses: Marketing, Packaging, Carrier Shipping Subsidies, Fulfilment, and Admin.<br>
+            <strong>Net Operating Profit</strong> = <code>Gross Profit - Operating Expenses</code>.<br>
+            <strong>Operating Margin %</strong> = <code>(Net Operating Profit ÷ Net Revenue) × 100</code>.
+          </p>
+        </div>
+
+        <div style="margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <h4 style="color: var(--color-forest); margin-bottom: 4px;">4. Average Order Value (AOV) & Refund Rate</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+            <strong>Average Order Value (AOV)</strong> = <code>Net Revenue ÷ Qualifying Orders Count</code>.<br>
+            <strong>Refund Rate</strong> = <code>(Refunded Orders ÷ Total Placed Orders) × 100</code>.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--color-forest); margin-bottom: 4px;">5. Inventory Runway & Turnover</h4>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+            <strong>Inventory Valuation</strong> = Sum of <code>StockQuantity × UnitCost</code> for all active formulations.<br>
+            <strong>Daily Run Rate</strong> = <code>Past 30-Day Units Sold ÷ 30 Days</code>.<br>
+            <strong>Stock Runway</strong> = <code>Current Stock Quantity ÷ Daily Run Rate</code> (Days remaining until stockout).<br>
+            <strong>Annualized Turnover</strong> = <code>(Monthly COGS × 12) ÷ Total Stock Valuation</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 14px 20px; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('kpi-glossary-modal').classList.remove('active')">Got It</button>
+      </div>
     </div>
   </div>
 

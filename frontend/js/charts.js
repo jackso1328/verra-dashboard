@@ -199,7 +199,125 @@ export const createDoughnutChart = (canvasId, labels, data, customColors) => {
 };
 
 /**
- * 4. Horizontal Bar Chart for Product Performance
+ * 5. Explainable Sales Forecast Chart (Historical Actuals vs Forecast Estimates)
+ */
+export const createForecastChart = (canvasId, historicalData, forecastData) => {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const ctx = canvas.getContext('2d');
+
+  // Combined labels: historical labels followed by forecast labels
+  const histLabels = historicalData.map(h => h.label);
+  const foreLabels = forecastData.map(f => f.label);
+  const allLabels = [...histLabels, ...foreLabels];
+
+  // Actuals series: actual numbers for history, null for future
+  const actualsSeries = [
+    ...historicalData.map(h => h.revenue),
+    ...forecastData.map(() => null)
+  ];
+
+  // Forecast series: bridge from last historical point into forecast points
+  const lastHistRevenue = historicalData.length > 0 ? historicalData[historicalData.length - 1].revenue : null;
+  const forecastSeries = [
+    ...historicalData.slice(0, -1).map(() => null),
+    lastHistRevenue,
+    ...forecastData.map(f => f.predictedRevenue)
+  ];
+
+  // Upper Bound series
+  const upperSeries = [
+    ...historicalData.slice(0, -1).map(() => null),
+    lastHistRevenue,
+    ...forecastData.map(f => f.upperBound)
+  ];
+
+  // Lower Bound series
+  const lowerSeries = [
+    ...historicalData.slice(0, -1).map(() => null),
+    lastHistRevenue,
+    ...forecastData.map(f => f.lowerBound)
+  ];
+
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: allLabels,
+      datasets: [
+        {
+          label: 'Historical Actuals (INR)',
+          data: actualsSeries,
+          borderColor: CHART_COLORS.forest,
+          backgroundColor: CHART_COLORS.forestTransparent,
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointBackgroundColor: CHART_COLORS.forest,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Projected Forecast (INR)',
+          data: forecastSeries,
+          borderColor: CHART_COLORS.gold,
+          backgroundColor: 'transparent',
+          borderDash: [6, 4],
+          borderWidth: 2.5,
+          pointBackgroundColor: CHART_COLORS.gold,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        },
+        {
+          label: 'Upper Confidence Limit (+7.5%)',
+          data: upperSeries,
+          borderColor: 'rgba(198, 170, 114, 0.4)',
+          backgroundColor: 'transparent',
+          borderDash: [2, 2],
+          borderWidth: 1,
+          pointRadius: 0
+        },
+        {
+          label: 'Lower Confidence Limit (-7.5%)',
+          data: lowerSeries,
+          borderColor: 'rgba(198, 170, 114, 0.4)',
+          backgroundColor: 'transparent',
+          borderDash: [2, 2],
+          borderWidth: 1,
+          pointRadius: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { boxWidth: 14, font: { weight: 600 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              if (ctx.raw === null || ctx.raw === undefined) return null;
+              return ` ${ctx.dataset.label}: ₹${Number(ctx.raw).toLocaleString('en-IN')}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          grid: { color: CHART_COLORS.border },
+          ticks: { callback: (val) => `₹${Number(val).toLocaleString('en-IN')}` }
+        }
+      }
+    }
+  });
+};
+
+/**
+ * 6. Horizontal Bar Chart for Product Performance
  */
 export const createHorizontalBarChart = (canvasId, labels, data, labelName = 'Gross Sales (₹)') => {
   const canvas = document.getElementById(canvasId);

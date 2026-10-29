@@ -56,19 +56,37 @@
 
       <!-- Filters & Search Toolbar -->
       <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 18px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 36px; box-shadow: var(--shadow-subtle);">
-        <div style="display: flex; gap: 12px; flex: 1; min-width: 280px;">
-          <input type="text" id="search-input" class="form-control" placeholder="Search by botanical ingredient or benefit..." style="padding: 10px 14px; font-size: 0.9rem;">
+        <div style="display: flex; gap: 12px; flex: 1; min-width: 260px;">
+          <input type="text" id="search-input" class="form-control" placeholder="Search by botanical ingredient, benefit, or name..." style="padding: 10px 14px; font-size: 0.9rem;">
         </div>
 
         <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <label for="category-filter" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap;">Ritual:</label>
             <select id="category-filter" class="form-select" style="padding: 10px 14px; font-size: 0.88rem; width: auto;">
-              <option value="all">All Ritual Formulations</option>
+              <option value="all">All Rituals</option>
               <option value="Scalp Rituals">Scalp Rituals (Rosemary)</option>
               <option value="Smoothing Rituals">Smoothing Rituals (Argan)</option>
               <option value="Nourishing Rituals">Nourishing Rituals (Amla & Bhringraj)</option>
               <option value="Pre-Wash Rituals">Pre-Wash Rituals (Coconut)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="price-filter" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap;">Price:</label>
+            <select id="price-filter" class="form-select" style="padding: 10px 14px; font-size: 0.88rem; width: auto;">
+              <option value="all">All Prices</option>
+              <option value="under-1000">Under ₹1,000</option>
+              <option value="1000-1300">₹1,000 – ₹1,300</option>
+              <option value="above-1300">Above ₹1,300</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="stock-filter" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap;">Availability:</label>
+            <select id="stock-filter" class="form-select" style="padding: 10px 14px; font-size: 0.88rem; width: auto;">
+              <option value="all">All Formulations</option>
+              <option value="in-stock">In Stock Only</option>
             </select>
           </div>
 
@@ -81,6 +99,8 @@
               <option value="name">Name: A to Z</option>
             </select>
           </div>
+
+          <button id="reset-filters-btn" class="btn btn-secondary btn-sm" style="padding: 9px 12px; font-size: 0.82rem;">Reset</button>
         </div>
       </div>
 

@@ -581,6 +581,48 @@
   color: #8E9F96;
 }
 
+/* Wishlist Button Overlay */
+.wishlist-toggle-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-forest);
+  transition: all 0.25s ease;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.wishlist-toggle-btn:hover {
+  transform: scale(1.08);
+  background: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.wishlist-toggle-btn.active {
+  background: #FFFFFF;
+  border-color: var(--color-gold);
+}
+
+/* Badge Variations */
+.badge-gold {
+  background-color: var(--color-gold);
+  color: #FFFFFF;
+}
+
+.badge-warning {
+  background-color: #E67E22;
+  color: #FFFFFF;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .hero-grid { grid-template-columns: 1fr; gap: 40px; }

@@ -52,7 +52,7 @@
     <div class="dashboard-content">
       
       <!-- Top Stats Grid -->
-      <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 28px;">
+      <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 28px;">
         <div class="kpi-card accent-sage">
           <div class="kpi-header"><span class="kpi-title">Total Units Available</span></div>
           <div class="kpi-value" id="inv-total-units">0</div>
@@ -66,18 +66,24 @@
         </div>
 
         <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-title">Annualized Turnover</span></div>
+          <div class="kpi-value" id="inv-turnover-ratio">0.0x</div>
+          <div class="kpi-subtext">COGS ÷ Average Stock Value</div>
+        </div>
+
+        <div class="kpi-card">
           <div class="kpi-header"><span class="kpi-title">Low-Stock Warnings</span></div>
           <div class="kpi-value" id="inv-low-count" style="color: var(--color-warning);">0</div>
           <div class="kpi-subtext">Below replenishment threshold</div>
         </div>
       </div>
 
-      <!-- Live Stock Table -->
-      <div class="table-card">
+      <!-- Live Stock Table with Runway -->
+      <div class="table-card" style="margin-bottom: 28px;">
         <div class="table-header">
           <div>
-            <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Botanical Inventory Levels</h3>
-            <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Real-time stock quantities and reorder thresholds</span>
+            <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Botanical Inventory Levels & Stock Runway</h3>
+            <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Real-time stock quantities, daily sales run-rate, and remaining runway (days)</span>
           </div>
         </div>
 
@@ -88,9 +94,11 @@
                 <th>Formulation</th>
                 <th>In Stock</th>
                 <th>Reorder Level</th>
+                <th>30D Run Rate</th>
+                <th>Runway (Days)</th>
                 <th>Unit Cost</th>
                 <th>Valuation</th>
-                <th>Status</th>
+                <th>Restock Priority</th>
                 <th>Actions</th>
               </tr>
             </thead>

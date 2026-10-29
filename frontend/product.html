@@ -206,15 +206,19 @@
                 ${product.description}
               </p>
 
-              <!-- Add to Bag Controls -->
-              <div style="display: flex; gap: 16px; margin-bottom: 40px; align-items: center;">
+              <!-- Add to Bag & Wishlist Controls -->
+              <div style="display: flex; gap: 14px; margin-bottom: 40px; align-items: center; flex-wrap: wrap;">
                 <div class="qty-control" style="padding: 4px;">
-                  <button class="qty-btn" id="p-dec-qty" style="width:36px; height:36px;">-</button>
+                  <button class="qty-btn" id="p-dec-qty" style="width:38px; height:38px;">-</button>
                   <span class="qty-val" id="p-qty-val" style="width:40px; font-size:1rem;">1</span>
-                  <button class="qty-btn" id="p-inc-qty" style="width:36px; height:36px;">+</button>
+                  <button class="qty-btn" id="p-inc-qty" style="width:38px; height:38px;">+</button>
                 </div>
-                <button class="btn btn-primary" id="p-add-to-cart-btn" style="flex: 1; padding: 14px 28px;">
-                  Add Formulation to Ritual Bag
+                <button class="btn btn-primary" id="p-add-to-cart-btn" style="flex: 1; min-width: 220px; padding: 14px 28px;" ${product.stockQuantity === 0 ? 'disabled' : ''}>
+                  ${product.stockQuantity === 0 ? 'Sold Out' : 'Add Formulation to Ritual Bag'}
+                </button>
+                <button class="btn btn-secondary" id="p-wishlist-btn" style="padding: 14px 18px; display: flex; align-items: center; gap: 8px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <span id="p-wishlist-text">Save</span>
                 </button>
               </div>
 
@@ -233,15 +237,51 @@
 
           <!-- Customer Reviews Section -->
           <div style="border-top: 1px solid var(--color-border); padding-top: 50px; margin-bottom: 60px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px;">
               <div>
                 <span class="section-tag">Ritual Testimonials</span>
-                <h2>Client Experiences (${reviews.length})</h2>
+                <h2>Client Experiences (<span id="review-count-header">${reviews.length}</span>)</h2>
               </div>
-              <button class="btn btn-secondary btn-sm" onclick="alert('Review submission is available to verified order patrons.')">Share Your Ritual</button>
+              <button class="btn btn-secondary btn-sm" id="open-review-modal-btn">Share Your Ritual</button>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+            <!-- Review Submission Modal Form -->
+            <div id="review-modal-container" style="display: none; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 32px; box-shadow: var(--shadow-card);">
+              <h3 style="font-size: 1.2rem; color: var(--color-forest-dark); margin-bottom: 8px;">Leave a Verified Botanical Review</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 20px;">Share how this formulation transformed your scalp or hair ritual.</p>
+              <form id="product-review-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div>
+                    <label class="form-label" style="font-size: 0.82rem;">Your Name *</label>
+                    <input type="text" id="review-author" class="form-control" required placeholder="e.g. Priya Sharma">
+                  </div>
+                  <div>
+                    <label class="form-label" style="font-size: 0.82rem;">Rating *</label>
+                    <select id="review-rating" class="form-select">
+                      <option value="5">★★★★★ (5 Stars — Sublime)</option>
+                      <option value="4">★★★★☆ (4 Stars — Very Good)</option>
+                      <option value="3">★★★☆☆ (3 Stars — Good)</option>
+                      <option value="2">★★☆☆☆ (2 Stars — Fair)</option>
+                      <option value="1">★☆☆☆☆ (1 Star — Needs Improvement)</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                  <label class="form-label" style="font-size: 0.82rem;">Review Headline *</label>
+                  <input type="text" id="review-headline" class="form-control" required placeholder="e.g. Weightless shine without grease">
+                </div>
+                <div style="margin-bottom: 20px;">
+                  <label class="form-label" style="font-size: 0.82rem;">Detailed Experience *</label>
+                  <textarea id="review-comment" class="form-control" rows="3" required placeholder="Describe texture, botanical fragrance, and results after multiple uses..."></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="cancel-review-btn">Cancel</button>
+                  <button type="submit" class="btn btn-primary btn-sm" id="submit-review-btn">Submit Review</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="product-reviews-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
               ${reviews.length > 0 ? reviews.map(r => `
                 <div class="card" style="padding: 24px;">
                   <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -287,13 +327,33 @@
 
         // Handle Quantity & Add to Cart
         let currentQty = 1;
+        const maxStock = product.stockQuantity || 999;
         const qtyVal = document.getElementById('p-qty-val');
         const incBtn = document.getElementById('p-inc-qty');
         const decBtn = document.getElementById('p-dec-qty');
         const addBtn = document.getElementById('p-add-to-cart-btn');
+        const wishlistBtn = document.getElementById('p-wishlist-btn');
+        const wishlistText = document.getElementById('p-wishlist-text');
 
-        if (incBtn) incBtn.onclick = () => { currentQty++; qtyVal.textContent = currentQty; };
-        if (decBtn) decBtn.onclick = () => { if (currentQty > 1) { currentQty--; qtyVal.textContent = currentQty; } };
+        if (incBtn) {
+          incBtn.onclick = () => {
+            if (currentQty < maxStock) {
+              currentQty++;
+              qtyVal.textContent = currentQty;
+            } else {
+              alert(`Maximum available stock is ${maxStock} units.`);
+            }
+          };
+        }
+
+        if (decBtn) {
+          decBtn.onclick = () => {
+            if (currentQty > 1) {
+              currentQty--;
+              qtyVal.textContent = currentQty;
+            }
+          };
+        }
 
         if (addBtn) {
           addBtn.onclick = () => {
@@ -306,6 +366,102 @@
               sku: product.sku,
               stockQuantity: product.stockQuantity
             }, currentQty);
+            
+            const orig = addBtn.textContent;
+            addBtn.textContent = 'Added to Bag ✓';
+            addBtn.style.backgroundColor = 'var(--color-gold)';
+            setTimeout(() => {
+              addBtn.textContent = orig;
+              addBtn.style.backgroundColor = '';
+            }, 1200);
+          };
+        }
+
+        // Wishlist button handling
+        import('/js/wishlist.js').then(({ wishlist }) => {
+          const syncWishlistBtn = () => {
+            const isSaved = wishlist.isInWishlist(product._id);
+            if (wishlistText) wishlistText.textContent = isSaved ? 'Saved in Wishlist' : 'Save to Rituals';
+            if (wishlistBtn) {
+              wishlistBtn.style.color = isSaved ? 'var(--color-gold)' : '';
+              wishlistBtn.style.borderColor = isSaved ? 'var(--color-gold)' : '';
+            }
+          };
+          syncWishlistBtn();
+
+          if (wishlistBtn) {
+            wishlistBtn.onclick = () => {
+              wishlist.toggle(product);
+              syncWishlistBtn();
+            };
+          }
+        });
+
+        // Review Form Handling
+        const openReviewBtn = document.getElementById('open-review-modal-btn');
+        const reviewModal = document.getElementById('review-modal-container');
+        const cancelReviewBtn = document.getElementById('cancel-review-btn');
+        const reviewForm = document.getElementById('product-review-form');
+
+        const currentUser = auth.getUser();
+        if (currentUser && document.getElementById('review-author')) {
+          document.getElementById('review-author').value = currentUser.name || '';
+        }
+
+        if (openReviewBtn && reviewModal) {
+          openReviewBtn.onclick = () => {
+            reviewModal.style.display = reviewModal.style.display === 'none' ? 'block' : 'none';
+          };
+        }
+
+        if (cancelReviewBtn && reviewModal) {
+          cancelReviewBtn.onclick = () => { reviewModal.style.display = 'none'; };
+        }
+
+        if (reviewForm) {
+          reviewForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-review-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            const payload = {
+              authorName: document.getElementById('review-author').value,
+              rating: parseInt(document.getElementById('review-rating').value, 10),
+              headline: document.getElementById('review-headline').value,
+              comment: document.getElementById('review-comment').value
+            };
+
+            try {
+              const revRes = await api.post(`products/${product._id}/reviews`, payload);
+              if (revRes.success) {
+                alert('Thank you for sharing your botanical experience. Your review has been published.');
+                reviewModal.style.display = 'none';
+                
+                // Prepend to reviews list
+                const grid = document.getElementById('product-reviews-grid');
+                if (grid) {
+                  const newCard = document.createElement('div');
+                  newCard.className = 'card';
+                  newCard.style.padding = '24px';
+                  newCard.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                      <div style="color:var(--color-gold); font-size:1.1rem;">${'★'.repeat(payload.rating)}${'☆'.repeat(5 - payload.rating)}</div>
+                      <span class="badge badge-forest" style="font-size:0.7rem;">Verified Patron</span>
+                    </div>
+                    <h4 style="font-size: 1rem; margin-bottom: 8px; color: var(--color-forest-dark);">${payload.headline}</h4>
+                    <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 12px;">"${payload.comment}"</p>
+                    <div style="font-size: 0.78rem; color: var(--color-taupe); font-weight: 600;">— ${payload.authorName}</div>
+                  `;
+                  grid.prepend(newCard);
+                }
+              }
+            } catch (err) {
+              alert(`Review notice: ${err.message}`);
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Submit Review';
+            }
           };
         }
 

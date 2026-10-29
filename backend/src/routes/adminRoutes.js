@@ -17,6 +17,8 @@ router.get('/product-performance', adminController.getProductPerformance);
 router.get('/financials', adminController.getFinancials);
 router.get('/inventory', adminController.getInventory);
 router.get('/customers', adminController.getCustomers);
+router.get('/forecast', adminController.getForecast);
+router.get('/insights', adminController.getInsights);
 router.get('/reports/sales', adminController.getSalesReport);
 
 // Admin Product Management

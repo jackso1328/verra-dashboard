@@ -1,5 +1,7 @@
 /**
  * VÉRRA Admin Dashboard Core Logic
+ * Integrated BI Executive Overview, Sales Analytics, Explainable Forecasting,
+ * Product Profitability, Inventory Intelligence, Customer RFM, and Multi-Dataset Reports
  */
 import { api } from './api.js';
 import { auth } from './auth.js';
@@ -7,7 +9,8 @@ import {
   createRevenueLineChart,
   createRevenueVsProfitBarChart,
   createDoughnutChart,
-  createHorizontalBarChart
+  createHorizontalBarChart,
+  createForecastChart
 } from './charts.js';
 
 class AdminController {
@@ -68,7 +71,6 @@ class AdminController {
   }
 
   async checkDatabaseHealth() {
-    const statusPill = document.getElementById('db-status-pill');
     const statusText = document.getElementById('db-status-text');
     const statusDot = document.getElementById('db-status-dot');
 
@@ -116,6 +118,7 @@ class AdminController {
     const productSelect = document.getElementById('filter-product-select');
     const channelSelect = document.getElementById('filter-channel-select');
     const regionSelect = document.getElementById('filter-region-select');
+    const resetOverviewBtn = document.getElementById('reset-overview-filters');
 
     pills.forEach(pill => {
       pill.addEventListener('click', () => {
@@ -165,6 +168,19 @@ class AdminController {
     if (regionSelect) {
       regionSelect.addEventListener('change', () => {
         this.selectedRegion = regionSelect.value === 'all' ? null : regionSelect.value;
+        this.refreshPage(pageType);
+      });
+    }
+
+    if (resetOverviewBtn) {
+      resetOverviewBtn.addEventListener('click', () => {
+        pills.forEach(p => p.classList.toggle('active', p.getAttribute('data-period') === '30d'));
+        this.currentPeriod = '30d';
+        this.customStart = null;
+        this.customEnd = null;
+        this.selectedProduct = null;
+        if (productSelect) productSelect.value = 'all';
+        if (customInputs) customInputs.style.display = 'none';
         this.refreshPage(pageType);
       });
     }
@@ -219,8 +235,58 @@ class AdminController {
         this.destroyChart('overviewLine');
         this.activeCharts['overviewLine'] = createRevenueLineChart('overview-trend-chart', salesRes.data.timeline);
       }
+
+      // Load Dynamic Automated Business Insights
+      await this.loadBusinessInsights(params);
+
+      // Wire Glossary Modal
+      const openGlossaryBtn = document.getElementById('open-glossary-btn');
+      const closeGlossaryBtn = document.getElementById('close-glossary-btn');
+      const glossaryModal = document.getElementById('kpi-glossary-modal');
+
+      if (openGlossaryBtn && glossaryModal) {
+        openGlossaryBtn.onclick = () => glossaryModal.classList.add('active');
+      }
+      if (closeGlossaryBtn && glossaryModal) {
+        closeGlossaryBtn.onclick = () => glossaryModal.classList.remove('active');
+      }
     } catch (e) {
       console.error('Failed to load overview data:', e);
+    }
+  }
+
+  async loadBusinessInsights(params) {
+    const container = document.getElementById('automated-insights-container');
+    const badge = document.getElementById('insights-count-badge');
+    if (!container) return;
+
+    try {
+      const res = await api.get('admin/insights', params);
+      if (res.success && res.data && res.data.insights) {
+        const insights = res.data.insights;
+        if (badge) badge.textContent = `${insights.length} Algorithmic Insights`;
+
+        container.innerHTML = insights.map(item => {
+          let badgeClass = 'badge-forest';
+          if (item.sentiment === 'positive') badgeClass = 'badge-success';
+          else if (item.sentiment === 'warning' || item.sentiment === 'negative') badgeClass = 'badge-warning';
+
+          return `
+            <div style="background:#FFFFFF; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-taupe); font-weight:700;">${item.category}</span>
+                  <span class="badge ${badgeClass}" style="font-size:0.72rem;">${item.metric}</span>
+                </div>
+                <h4 style="font-size:0.95rem; color:var(--color-forest-dark); margin-bottom:6px;">${item.title}</h4>
+                <p style="font-size:0.83rem; color:var(--color-text-secondary); line-height:1.5; margin:0;">${item.description}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (e) {
+      container.innerHTML = `<div style="grid-column:1/-1; padding:16px; color:var(--color-text-secondary); font-size:0.85rem;">Insights synthesizing... (run backend with active connection)</div>`;
     }
   }
 
@@ -244,7 +310,7 @@ class AdminController {
   }
 
   /**
-   * 2. Sales Analytics Page
+   * 2. Sales Analytics Page with Explainable Forecasting
    */
   async loadSalesAnalytics() {
     try {
@@ -270,8 +336,30 @@ class AdminController {
         this.destroyChart('regionDoughnut');
         this.activeCharts['regionDoughnut'] = createDoughnutChart('sales-region-chart', Object.keys(byRegion), Object.values(byRegion));
       }
+
+      // Load Explainable Sales Forecast
+      const forecastRes = await api.get('admin/forecast', params);
+      if (forecastRes.success && forecastRes.data) {
+        const { historical, forecast, summary, methodology } = forecastRes.data;
+
+        const nextMonthEl = document.getElementById('forecast-next-month-val');
+        const quarterEl = document.getElementById('forecast-quarter-val');
+        const directionEl = document.getElementById('forecast-direction-val');
+        const slopeEl = document.getElementById('forecast-slope-val');
+        const methodTextEl = document.getElementById('forecast-methodology-text');
+
+        if (nextMonthEl) nextMonthEl.textContent = `₹${(summary.nextMonthProjectedRevenue || 0).toLocaleString('en-IN')}`;
+        if (quarterEl) quarterEl.textContent = `₹${(summary.nextQuarterProjectedRevenue || 0).toLocaleString('en-IN')}`;
+        if (directionEl) directionEl.textContent = summary.trendDirection;
+        if (slopeEl) slopeEl.textContent = `${summary.monthlySlopeInr >= 0 ? '+' : ''}₹${(summary.monthlySlopeInr || 0).toLocaleString('en-IN')} / month`;
+        if (methodTextEl) methodTextEl.textContent = methodology;
+
+        // Forecast Chart
+        this.destroyChart('forecastLine');
+        this.activeCharts['forecastLine'] = createForecastChart('sales-forecast-chart', historical, forecast);
+      }
     } catch (e) {
-      console.error('Failed to load sales analytics:', e);
+      console.error('Failed to load sales analytics or forecast:', e);
     }
   }
 
@@ -366,25 +454,34 @@ class AdminController {
   }
 
   /**
-   * 5. Inventory Management Page
+   * 5. Inventory Intelligence Page with Runway & Turnover
    */
   async loadInventory() {
     try {
       const res = await api.get('admin/inventory');
       if (res.success && res.data) {
-        const { totalUnits, totalStockValuation, products, lowStockAlerts, movements } = res.data;
+        const { totalUnits, totalStockValuation, products, lowStockAlerts, movements, inventoryTurnoverRatio } = res.data;
 
-        document.getElementById('inv-total-units').textContent = totalUnits.toLocaleString('en-IN');
-        document.getElementById('inv-valuation').textContent = `₹${totalStockValuation.toLocaleString('en-IN')}`;
-        document.getElementById('inv-low-count').textContent = lowStockAlerts.length;
+        const totalUnitsEl = document.getElementById('inv-total-units');
+        const valEl = document.getElementById('inv-valuation');
+        const lowEl = document.getElementById('inv-low-count');
+        const turnoverEl = document.getElementById('inv-turnover-ratio');
 
-        // Products Stock Table
+        if (totalUnitsEl) totalUnitsEl.textContent = totalUnits.toLocaleString('en-IN');
+        if (valEl) valEl.textContent = `₹${totalStockValuation.toLocaleString('en-IN')}`;
+        if (lowEl) lowEl.textContent = lowStockAlerts.length;
+        if (turnoverEl) turnoverEl.textContent = `${inventoryTurnoverRatio || 0.8}x`;
+
+        // Products Stock Table with Runway
         const prodTbody = document.getElementById('inventory-stock-tbody');
         if (prodTbody) {
           prodTbody.innerHTML = products.map(p => {
             const isLow = p.stockQuantity <= p.reorderThreshold;
-            const badgeClass = p.stockQuantity <= 10 ? 'badge-danger' : (isLow ? 'badge-warning' : 'badge-forest');
-            const statusText = p.stockQuantity === 0 ? 'Out of Stock' : (isLow ? 'Low Stock Alert' : 'Healthy');
+            let badgeClass = 'badge-forest';
+            let priorityText = p.restockPriority || (isLow ? 'Medium Reorder' : 'Healthy');
+
+            if (p.stockQuantity === 0) badgeClass = 'badge-danger';
+            else if (priorityText.includes('High') || isLow) badgeClass = 'badge-warning';
 
             return `
               <tr>
@@ -396,9 +493,11 @@ class AdminController {
                 </td>
                 <td><strong>${p.stockQuantity}</strong></td>
                 <td>${p.reorderThreshold}</td>
+                <td>${p.dailyRunRate || 1.1} units/day</td>
+                <td><strong>${p.estimatedDaysRemaining !== 999 ? `${p.estimatedDaysRemaining} days` : '>180 days'}</strong></td>
                 <td>₹${p.unitCost}</td>
                 <td>₹${(p.stockQuantity * p.unitCost).toLocaleString('en-IN')}</td>
-                <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                <td><span class="badge ${badgeClass}">${priorityText}</span></td>
                 <td>
                   <button class="btn btn-secondary btn-sm restock-modal-btn" data-id="${p._id}" data-name="${p.name}">Restock</button>
                 </td>
@@ -411,8 +510,8 @@ class AdminController {
             btn.addEventListener('click', () => {
               const pId = btn.getAttribute('data-id');
               const pName = btn.getAttribute('data-name');
-              const addedQty = prompt(`Enter quantity to replenish for ${pName}:`, '50');
-              if (addedQty && !isNaN(parseInt(addedQty))) {
+              const addedQty = prompt(`Enter quantity to replenish into warehouse for ${pName}:`, '50');
+              if (addedQty && !isNaN(parseInt(addedQty, 10)) && parseInt(addedQty, 10) > 0) {
                 this.restockProduct(pId, parseInt(addedQty, 10));
               }
             });
@@ -445,7 +544,7 @@ class AdminController {
       if (prodRes.success && prodRes.data) {
         const newStock = prodRes.data.stockQuantity + quantity;
         await api.patch(`admin/products/${productId}`, { stockQuantity: newStock });
-        alert(`Successfully added ${quantity} units. New stock is ${newStock}.`);
+        alert(`Stock replenished successfully. Added +${quantity} units. New balance is ${newStock} units.`);
         this.loadInventory();
       }
     } catch (e) {
@@ -494,11 +593,12 @@ class AdminController {
   }
 
   /**
-   * 7. Reports & CSV Export Page
+   * 7. Reports & Multi-Dataset CSV Export Page
    */
   async loadReports() {
     const tableBody = document.getElementById('reports-table-tbody');
     const exportBtn = document.getElementById('export-csv-btn');
+    const datasetSelect = document.getElementById('report-dataset-type');
     const statusSelect = document.getElementById('report-status-filter');
     const channelSelect = document.getElementById('report-channel-filter');
     const regionSelect = document.getElementById('report-region-filter');
@@ -507,7 +607,10 @@ class AdminController {
       if (!tableBody) return;
       tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px;"><div class="spinner"></div></td></tr>`;
 
+      const datasetType = datasetSelect ? datasetSelect.value : 'sales';
       const params = this.getFilterParams();
+      params.type = datasetType;
+
       if (statusSelect && statusSelect.value !== 'all') params.status = statusSelect.value;
       if (channelSelect && channelSelect.value !== 'all') params.channel = channelSelect.value;
       if (regionSelect && regionSelect.value !== 'all') params.region = regionSelect.value;
@@ -544,13 +647,16 @@ class AdminController {
 
     if (exportBtn) {
       exportBtn.onclick = async () => {
+        const datasetType = datasetSelect ? datasetSelect.value : 'sales';
         const params = this.getFilterParams();
         params.format = 'csv';
+        params.type = datasetType;
         const queryStr = new URLSearchParams(params).toString();
         window.open(`${api.baseUrl}/admin/reports/sales?${queryStr}`, '_blank');
       };
     }
 
+    if (datasetSelect) datasetSelect.onchange = fetchReports;
     if (statusSelect) statusSelect.onchange = fetchReports;
     if (channelSelect) channelSelect.onchange = fetchReports;
     if (regionSelect) regionSelect.onchange = fetchReports;

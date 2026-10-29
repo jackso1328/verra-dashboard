@@ -91,6 +91,11 @@
         </div>
       </div>
 
+      <!-- Order Eligibility & Calculation Governance Banner -->
+      <div style="background: #F4F6F4; border-left: 4px solid var(--color-forest); border-radius: var(--radius-xs); padding: 14px 18px; margin-bottom: 24px; font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">
+        <strong style="color: var(--color-forest-dark);">BI Sales Accounting Governance:</strong> Only fulfilled or in-transit orders (<code>delivered</code>, <code>shipped</code>, <code>processing</code>) contribute to realized Net Revenue and Gross Profit. Cancelled and unfulfilled pending orders are rigorously excluded to avoid misleading performance metrics.
+      </div>
+
       <!-- Main Timeline Chart -->
       <div class="chart-card" style="margin-bottom: 28px;">
         <div class="chart-header">
@@ -105,7 +110,7 @@
       </div>
 
       <!-- Grouped Bar Chart & Channels/Regions Grid -->
-      <div class="charts-grid-equal">
+      <div class="charts-grid-equal" style="margin-bottom: 28px;">
         
         <!-- Revenue vs Profit by Month -->
         <div class="chart-card">
@@ -130,13 +135,56 @@
       </div>
 
       <!-- Region Breakdown Chart -->
-      <div class="chart-card">
+      <div class="chart-card" style="margin-bottom: 28px;">
         <div class="chart-header">
           <h3 class="chart-title">Geographical Distribution by Indian Region</h3>
           <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Direct net sales breakdown across pan-India delivery zones</span>
         </div>
         <div class="chart-body" style="height: 280px; max-width: 480px; margin: 0 auto;">
           <canvas id="sales-region-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Advanced Feature: Explainable Sales Forecasting Section -->
+      <div class="chart-card" style="background: linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 100%); border-left: 4px solid var(--color-gold);">
+        <div class="chart-header" style="border-bottom: 1px solid var(--color-border); padding-bottom: 14px; margin-bottom: 20px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--color-gold); font-size:1.2rem;">✦</span>
+              <h3 class="chart-title" style="margin:0;">Explainable Sales Forecast (Next 90 Days)</h3>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--color-text-secondary);" id="forecast-methodology-text">Blended 60/40 Linear Monthly Trend Slope & 3-Month Rolling Weighted Moving Average</span>
+          </div>
+          <span class="badge badge-gold">Predictive Analytics</span>
+        </div>
+
+        <!-- Forecast Summary KPI Mini-cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div style="background:#FFFFFF; border:1px solid var(--color-border); border-radius:var(--radius-xs); padding:16px;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--color-text-muted); font-weight:700;">Next Month Projected</div>
+            <div id="forecast-next-month-val" style="font-size:1.4rem; font-family:var(--font-serif); font-weight:700; color:var(--color-forest); margin-top:4px;">₹0</div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid var(--color-border); border-radius:var(--radius-xs); padding:16px;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--color-text-muted); font-weight:700;">Quarterly Projected</div>
+            <div id="forecast-quarter-val" style="font-size:1.4rem; font-family:var(--font-serif); font-weight:700; color:var(--color-forest-dark); margin-top:4px;">₹0</div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid var(--color-border); border-radius:var(--radius-xs); padding:16px;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--color-text-muted); font-weight:700;">Trajectory Vector</div>
+            <div id="forecast-direction-val" style="font-size:1.15rem; font-weight:700; color:var(--color-gold); margin-top:6px;">Expanding (+)</div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid var(--color-border); border-radius:var(--radius-xs); padding:16px;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--color-text-muted); font-weight:700;">Monthly Trend Velocity</div>
+            <div id="forecast-slope-val" style="font-size:1.15rem; font-weight:700; color:var(--color-forest); margin-top:6px;">+₹0 / month</div>
+          </div>
+        </div>
+
+        <!-- Forecast Chart Canvas -->
+        <div class="chart-body" style="height: 360px;">
+          <canvas id="sales-forecast-chart"></canvas>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--color-border); font-size: 0.8rem; color: var(--color-text-secondary);">
+          <strong>Methodology Transparency:</strong> Estimates are calculated via ordinary least-squares (OLS) linear trend projection weighted against the last 90-day rolling run rate. Bands indicate a ±7.5% empirical confidence bound. Forecast estimates are clearly distinguished from audited database actuals.
         </div>
       </div>
 

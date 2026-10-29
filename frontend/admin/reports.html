@@ -45,8 +45,12 @@
     <header class="dashboard-topbar">
       <div class="topbar-title"><h1>Audited Sales Reports & CSV Export</h1></div>
       <div class="topbar-actions">
-        <button id="export-csv-btn" class="btn btn-gold btn-sm">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <button id="print-report-btn" class="btn btn-secondary btn-sm" onclick="window.print()" style="display:flex; align-items:center; gap:6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          Print Executive Summary
+        </button>
+        <button id="export-csv-btn" class="btn btn-primary btn-sm" style="display:flex; align-items:center; gap:6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Export CSV File
         </button>
       </div>
@@ -57,6 +61,16 @@
       <!-- Multi-Criteria Report Filters -->
       <div class="filter-bar">
         <div class="filter-group">
+          <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin-right: 6px;">Dataset:</label>
+          <select id="report-dataset-type" class="form-select" style="padding: 6px 12px; font-size: 0.82rem; width: auto; font-weight:600;">
+            <option value="sales">Sales & Orders Ledger</option>
+            <option value="products">Product Profitability Breakdown</option>
+            <option value="inventory">Inventory Intelligence & Valuation</option>
+            <option value="customers">Customer Profiles & RFM Segments</option>
+          </select>
+        </div>
+
+        <div class="filter-group" id="report-period-group">
           <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin-right: 6px;">Period:</span>
           <button class="filter-btn-pill" data-period="7d">Last 7D</button>
           <button class="filter-btn-pill active" data-period="30d">Last 30D</button>

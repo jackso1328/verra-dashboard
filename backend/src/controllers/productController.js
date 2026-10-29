@@ -152,10 +152,53 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// @desc    Submit a review for a product
+// @route   POST /api/products/:id/reviews
+// @access  Public / Customer
+const createReview = async (req, res, next) => {
+  try {
+    const { authorName, rating, headline, comment } = req.body;
+    const product = await Product.findById(req.params.id);
+
+    if (!product || !product.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.'
+      });
+    }
+
+    if (!authorName || !rating || !headline || !comment) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide author name, rating, headline, and comment.'
+      });
+    }
+
+    const review = await Review.create({
+      product: product._id,
+      authorName: authorName.trim(),
+      rating: Math.min(5, Math.max(1, parseInt(rating, 10) || 5)),
+      headline: headline.trim(),
+      comment: comment.trim(),
+      isVerified: true,
+      moderationStatus: 'approved'
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Thank you for sharing your botanical experience.',
+      data: review
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  createReview
 };
