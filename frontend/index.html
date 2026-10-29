@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VÉRRA — International Premium Botanical Hair Care</title>
+  <meta name="description" content="Discover VÉRRA. International luxury botanical hair oils crafted from cold-pressed rosemary, virgin argan, amla, and bhringraj for fortifying scalp health and radiant hair rituals.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <aside style="background-color: var(--color-forest-dark); color: #F8F6F0; text-align: center; padding: 10px 16px; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;">
+    Complimentary Botanical Delivery on all orders above ₹1,500 • Use Code <strong>VERRA10</strong> for 10% Off
+  </aside>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="/shop.html" class="nav-link">The Collection</a></li>
+          <li><a href="#philosophy" class="nav-link">Our Philosophy</a></li>
+          <li><a href="#rituals" class="nav-link">Hair Rituals</a></li>
+          <li><a href="/shop.html?category=Scalp+Rituals" class="nav-link">Scalp Oils</a></li>
+          <li><a href="/shop.html?category=Smoothing+Rituals" class="nav-link">Smoothing Nectars</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="nav-auth-state">
+          <a href="/login.html" class="nav-link">Sign In</a>
+        </div>
+        <button class="icon-btn open-cart-btn" aria-label="Open Shopping Bag">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span class="cart-count" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-text-col">
+          <span class="hero-badge">Pure Botanical Formulations • Cold-Pressed in Small Batches</span>
+          <h1 class="hero-title">Nourish Your Roots. <br>Elevate Your Ritual.</h1>
+          <p class="hero-subtitle">
+            An exquisite synthesis of ancient Ayurvedic botanical wisdom and contemporary trichological science. Formulated with wild-harvested rosemary, liquid Moroccan argan, and restorative amla to reawaken scalp vitality and bestow hair with mirror-like silkiness.
+          </p>
+          <div class="hero-cta-group">
+            <a href="/shop.html" class="btn btn-primary">Discover The Collection</a>
+            <a href="#rituals" class="btn btn-secondary">Explore Rituals</a>
+          </div>
+        </div>
+
+        <div class="hero-image-col">
+          <div class="hero-image-wrap">
+            <img src="/assets/images/hero_editorial.jpg" alt="VÉRRA Botanical Hair Oil Collection" class="hero-image">
+            <div class="hero-floating-card">
+              <p>The Scalp Vitality Ritual</p>
+              <span>100% Active Botanical Ingredients • Zero Mineral Oils • Zero Parabens</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Four Featured Formulations -->
+    <section class="section-padding">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Curated Formulations</span>
+          <h2 class="section-title">The Essential Botanical Quartet</h2>
+          <p>Four specialized botanical hair-care oils tailored for scalp fortification, moisture sealing, intensive nourishment, and pre-wash hair defense.</p>
+        </div>
+
+        <div class="product-grid" id="store-product-grid">
+          <!-- Dynamically loaded via store.js -->
+        </div>
+
+        <div style="text-align: center; margin-top: 48px;">
+          <a href="/shop.html" class="btn btn-secondary">View Complete Catalog & Filters &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brand Philosophy -->
+    <section class="section-padding" id="philosophy" style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Conscious Luxury</span>
+          <h2 class="section-title">Rooted in Botanical Integrity</h2>
+          <p>VÉRRA honors the timeless sanctity of traditional oil rituals while adhering to the highest standards of international luxury hair wellness.</p>
+        </div>
+
+        <div class="philosophy-grid">
+          <div class="philosophy-card">
+            <div class="philosophy-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <h3>Pure First-Cold Pressed</h3>
+            <p>Our botanical oils are extracted at strictly controlled low temperatures to safeguard thermo-sensitive antioxidants, polyphenols, and omega fatty acids.</p>
+          </div>
+
+          <div class="philosophy-card">
+            <div class="philosophy-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>
+            </div>
+            <h3>Micro-Batch Transparency</h3>
+            <p>Bottled in UV-protective amber glass apothecary flasks in micro-batches to guarantee peak freshness, potency, and sensorial aromatic luxury.</p>
+          </div>
+
+          <div class="philosophy-card">
+            <div class="philosophy-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </div>
+            <h3>Zero Synthetic Fillers</h3>
+            <p>Formulated without mineral oil, silicones, sulfates, artificial fragrances, or parabens. Every single drop delivers 100% active botanical nourishment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hair Rituals -->
+    <section class="section-padding rituals-section" id="rituals">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">The 3-Step Ceremony</span>
+          <h2 class="section-title">The VÉRRA Hair Ceremony</h2>
+          <p>Transform hair washing into a restorative sensory retreat with our three-stage mindful hair ritual.</p>
+        </div>
+
+        <div class="ritual-steps">
+          <div class="ritual-step">
+            <div class="ritual-step-num">01</div>
+            <h3>Scalp Awakening</h3>
+            <p>Part hair into quadrants. Dispense 1-2 droppers of <strong>Root Revival Oil</strong> onto dry scalp. Perform circular lymphatic massage for 5 minutes to stimulate microcirculation.</p>
+          </div>
+
+          <div class="ritual-step">
+            <div class="ritual-step-num">02</div>
+            <h3>Cortex Shield</h3>
+            <p>Coat fragile lengths with <strong>Coco Silk Treatment</strong> or <strong>Botanical Nourish Oil</strong> 30 minutes before cleansing. Wraps cuticles to prevent hygral fatigue and protein depletion.</p>
+          </div>
+
+          <div class="ritual-step">
+            <div class="ritual-step-num">03</div>
+            <h3>Silk Gloss Sealing</h3>
+            <p>Warm 2-3 drops of <strong>Silk Elixir</strong> between warm palms and glaze over damp or dry mid-lengths for weightless humidity protection and instant glass-like luminosity.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="/assets/images/verra_logo.png" alt="VÉRRA" style="height: 52px; margin-bottom: 16px; filter: brightness(1.2);">
+          <p>VÉRRA is an international luxury botanical hair wellness house combining ancestral plant rituals with modern hair vitality science. Priced in Indian Rupees (₹).</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>The Collection</h4>
+          <ul>
+            <li><a href="/shop.html">All Botanical Oils</a></li>
+            <li><a href="/shop.html?category=Scalp+Rituals">Root Revival Scalp Oil</a></li>
+            <li><a href="/shop.html?category=Smoothing+Rituals">Silk Elixir Glossing Oil</a></li>
+            <li><a href="/shop.html?category=Nourishing+Rituals">Botanical Nourish Oil</a></li>
+            <li><a href="/shop.html?category=Pre-Wash+Rituals">Coco Silk Treatment</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Client Concierge</h4>
+          <ul>
+            <li><a href="/account.html">Order Tracking</a></li>
+            <li><a href="/shop.html">Botanical Ingredients</a></li>
+            <li><a href="/login.html">Client Account</a></li>
+            <li><a href="/admin/index.html">Admin BI Analytics</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Editorial Newsletter</h4>
+          <p style="font-size: 0.85rem; color: #B5C4BC; margin-bottom: 12px;">Receive private previews of limited micro-batch harvest extractions and hair rituals.</p>
+          <div style="display: flex; gap: 8px;">
+            <input type="email" placeholder="Your email address" style="padding: 10px 12px; border-radius: 4px; border: 1px solid #3D5A4E; background: #1C362C; color: #FFF; font-size: 0.85rem; flex: 1;">
+            <button class="btn btn-gold btn-sm" onclick="alert('Thank you for subscribing to VÉRRA Gazette.')">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. All rights reserved. Prices shown in Indian Rupee (INR ₹).</div>
+        <div>
+          <a href="/admin/index.html" style="color: var(--color-gold); text-decoration: underline;">Administrative BI Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Bag Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3 style="font-size: 1.2rem; margin: 0; color: var(--color-forest-dark);">Your Ritual Bag</h3>
+      <button id="close-cart-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-secondary);">&times;</button>
+    </div>
+    <div class="cart-drawer-body" id="cart-drawer-items">
+      <!-- Loaded dynamically via cart.js -->
+    </div>
+    <div class="cart-drawer-footer">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-size: 0.95rem; font-weight: 600; color: var(--color-text-primary);">Subtotal:</span>
+        <span id="cart-drawer-subtotal" style="font-size: 1.25rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--color-text-secondary); margin-bottom: 16px;">Shipping & botanical discounts calculated at checkout.</p>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Proceed to Checkout</a>
+    </div>
+  </div>
+
+  <script type="module" src="/js/api.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/cart.js"></script>
+  <script type="module" src="/js/store.js"></script>
+</body>
+</html>

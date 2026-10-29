@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <style>
+      .brand-title {
+        font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 0.32em;
+        fill: #284B3E;
+      }
+      .brand-sub {
+        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        font-size: 8.5px;
+        font-weight: 500;
+        letter-spacing: 0.42em;
+        fill: #B7A99A;
+      }
+      .accent-leaf {
+        fill: #C6AA72;
+      }
+      .green-stem {
+        stroke: #284B3E;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        fill: none;
+      }
+    </style>
+  </defs>
+  
+  <!-- Botanical Emblem Icon -->
+  <g transform="translate(16, 12)">
+    <circle cx="28" cy="28" r="24" fill="#F8F6F0" stroke="#E8E6DF" stroke-width="1.2"/>
+    <!-- Organic botanical branch / leaf -->
+    <path class="green-stem" d="M28,42 C28,30 24,18 34,14" />
+    <path class="accent-leaf" d="M28,28 C23,24 22,19 28,17 C30,22 29,26 28,28 Z" opacity="0.9" />
+    <path class="accent-leaf" d="M30,34 C35,32 37,27 33,24 C31,28 30,31 30,34 Z" opacity="0.9" />
+    <circle cx="28" cy="14" r="2.2" fill="#C6AA72"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="88" y="44" class="brand-title">VÉRRA</text>
+  <text x="90" y="62" class="brand-sub">BOTANICAL HAIR RITUALS</text>
+  
+  <!-- Subtle gold accent line -->
+  <line x1="88" y1="50" x2="295" y2="50" stroke="#C6AA72" stroke-width="0.8" stroke-dasharray="2 4" opacity="0.5"/>
+</svg>

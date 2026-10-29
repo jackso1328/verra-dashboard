@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Botanical Collection — VÉRRA</title>
+  <meta name="description" content="Shop the complete VÉRRA botanical hair care collection. Cold-pressed scalp treatments, smoothing oils, and hair ritual formulas.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="/shop.html" class="nav-link active">The Collection</a></li>
+          <li><a href="/index.html#philosophy" class="nav-link">Our Philosophy</a></li>
+          <li><a href="/index.html#rituals" class="nav-link">Hair Rituals</a></li>
+          <li><a href="/cart.html" class="nav-link">Bag</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="nav-auth-state">
+          <a href="/login.html" class="nav-link">Sign In</a>
+        </div>
+        <button class="icon-btn open-cart-btn" aria-label="Open Shopping Bag">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span class="cart-count" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      
+      <!-- Catalog Header -->
+      <div style="text-align: center; max-width: 720px; margin: 0 auto 40px;">
+        <span class="section-tag">Cold-Pressed Botanical Elixirs</span>
+        <h1 style="margin-bottom: 16px;">The Formulation Catalog</h1>
+        <p>Pure, potent hair and scalp nectars crafted from rare cold-pressed botanicals. Formulated without silicones or synthetic fillers.</p>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 18px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 36px; box-shadow: var(--shadow-subtle);">
+        <div style="display: flex; gap: 12px; flex: 1; min-width: 280px;">
+          <input type="text" id="search-input" class="form-control" placeholder="Search by botanical ingredient or benefit..." style="padding: 10px 14px; font-size: 0.9rem;">
+        </div>
+
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="category-filter" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap;">Ritual:</label>
+            <select id="category-filter" class="form-select" style="padding: 10px 14px; font-size: 0.88rem; width: auto;">
+              <option value="all">All Ritual Formulations</option>
+              <option value="Scalp Rituals">Scalp Rituals (Rosemary)</option>
+              <option value="Smoothing Rituals">Smoothing Rituals (Argan)</option>
+              <option value="Nourishing Rituals">Nourishing Rituals (Amla & Bhringraj)</option>
+              <option value="Pre-Wash Rituals">Pre-Wash Rituals (Coconut)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="sort-select" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap;">Sort By:</label>
+            <select id="sort-select" class="form-select" style="padding: 10px 14px; font-size: 0.88rem; width: auto;">
+              <option value="default">Featured Collection</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Count Indicator -->
+      <div id="product-count-indicator" style="font-size: 0.85rem; color: var(--color-taupe); font-weight: 600; margin-bottom: 24px; letter-spacing: 0.05em; text-transform: uppercase;">
+        Loading catalog...
+      </div>
+
+      <!-- Products Grid -->
+      <div class="product-grid" id="store-product-grid">
+        <!-- Loaded via store.js -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="/assets/images/verra_logo.png" alt="VÉRRA" style="height: 52px; margin-bottom: 16px; filter: brightness(1.2);">
+          <p>VÉRRA is an international luxury botanical hair wellness house combining ancestral plant rituals with modern hair vitality science.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/shop.html">The Collection</a></li>
+            <li><a href="/cart.html">Shopping Bag</a></li>
+            <li><a href="/account.html">My Orders</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Administrative</h4>
+          <ul>
+            <li><a href="/admin/index.html">BI Overview</a></li>
+            <li><a href="/admin/sales.html">Sales Analytics</a></li>
+            <li><a href="/admin/reports.html">Reports & CSV Export</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Guaranteed Purity</h4>
+          <p style="font-size: 0.85rem; color: #B5C4BC;">Small-batch cold-press extractions bottled in amber glass. Zero mineral oils or synthetic silicones.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. All rights reserved. Indian Rupee (INR ₹) Pricing.</div>
+        <div><a href="/admin/index.html" style="color: var(--color-gold);">Admin Dashboard</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Bag Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3 style="font-size: 1.2rem; margin: 0; color: var(--color-forest-dark);">Your Ritual Bag</h3>
+      <button id="close-cart-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-secondary);">&times;</button>
+    </div>
+    <div class="cart-drawer-body" id="cart-drawer-items"></div>
+    <div class="cart-drawer-footer">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-size: 0.95rem; font-weight: 600;">Subtotal:</span>
+        <span id="cart-drawer-subtotal" style="font-size: 1.25rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
+      </div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Proceed to Checkout</a>
+    </div>
+  </div>
+
+  <script type="module" src="/js/api.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/cart.js"></script>
+  <script type="module" src="/js/store.js"></script>
+</body>
+</html>

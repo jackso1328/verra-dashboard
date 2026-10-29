@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Ritual Bag — VÉRRA</title>
+  <meta name="description" content="View items in your VÉRRA shopping bag.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="/shop.html" class="nav-link">The Collection</a></li>
+          <li><a href="/index.html#philosophy" class="nav-link">Our Philosophy</a></li>
+          <li><a href="/index.html#rituals" class="nav-link">Hair Rituals</a></li>
+          <li><a href="/cart.html" class="nav-link active">Bag</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="nav-auth-state">
+          <a href="/login.html" class="nav-link">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <span class="section-tag">Botanical Selections</span>
+        <h1>Your Shopping Bag</h1>
+      </div>
+
+      <div id="full-cart-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: start;">
+        <!-- Cart Items Table / Cards -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <table class="data-table" style="margin: 0;">
+            <thead>
+              <tr>
+                <th>Formulation</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cart-page-tbody">
+              <!-- Loaded dynamically via cart.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary & Checkout Box -->
+        <div class="card" style="padding: 28px;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 20px; color: var(--color-forest-dark);">Order Summary</h3>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Subtotal:</span>
+            <span id="page-cart-subtotal" style="font-weight: 600;">₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Promotional Discount:</span>
+            <span id="page-cart-discount" style="font-weight: 600; color: var(--color-success);">-₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Botanical Shipping:</span>
+            <span id="page-cart-shipping" style="font-weight: 600;">FREE</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">GST Included (5%):</span>
+            <span id="page-cart-tax" style="font-weight: 600;">₹0</span>
+          </div>
+
+          <div style="border-top: 1px solid var(--color-border); padding-top: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 1.1rem; font-weight: 700; color: var(--color-forest-dark);">Estimated Total:</span>
+            <span id="page-cart-total" style="font-size: 1.5rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
+          </div>
+
+          <a href="/checkout.html" class="btn btn-primary btn-block" style="margin-bottom: 12px;">Proceed to Checkout</a>
+          <a href="/shop.html" class="btn btn-secondary btn-block btn-sm">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. All rights reserved. Indian Rupee (INR ₹) Pricing.</div>
+        <div><a href="/shop.html" style="color: var(--color-gold);">Return to Collection</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { cart } from '/js/cart.js';
+    import { auth } from '/js/auth.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.updateNavUI();
+      renderCartPage();
+
+      function renderCartPage() {
+        const tbody = document.getElementById('cart-page-tbody');
+        const layout = document.getElementById('full-cart-layout');
+        const totals = cart.getTotals();
+
+        if (cart.items.length === 0) {
+          layout.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+              <h2 style="margin-bottom: 12px;">Your ritual bag is empty</h2>
+              <p style="color: var(--color-text-secondary); margin-bottom: 24px;">Discover our cold-pressed botanical hair oils.</p>
+              <a href="/shop.html" class="btn btn-primary">Explore The Collection</a>
+            </div>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = cart.items.map(item => `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <img src="/${item.image}" alt="${item.name}" style="width:54px; height:54px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+                <div>
+                  <strong style="color:var(--color-forest-dark); font-size:1rem;">${item.name}</strong>
+                  <div style="font-size:0.75rem; color:var(--color-taupe);">${item.sizeMl} ml • ${item.sku}</div>
+                </div>
+              </div>
+            </td>
+            <td><strong>₹${item.price.toLocaleString('en-IN')}</strong></td>
+            <td>
+              <div class="qty-control">
+                <button class="qty-btn dec-p-qty" data-id="${item.id}">-</button>
+                <span class="qty-val">${item.quantity}</span>
+                <button class="qty-btn inc-p-qty" data-id="${item.id}">+</button>
+              </div>
+            </td>
+            <td><strong style="color:var(--color-forest);">₹${(item.price * item.quantity).toLocaleString('en-IN')}</strong></td>
+            <td>
+              <button class="remove-p-btn" data-id="${item.id}" style="background:none; border:none; color:var(--color-text-muted); cursor:pointer; font-size:1.3rem;">&times;</button>
+            </td>
+          </tr>
+        `).join('');
+
+        document.getElementById('page-cart-subtotal').textContent = `₹${totals.grossSales.toLocaleString('en-IN')}`;
+        document.getElementById('page-cart-discount').textContent = `-₹${totals.discount.toLocaleString('en-IN')}`;
+        document.getElementById('page-cart-shipping').textContent = totals.shipping === 0 ? 'FREE' : `₹${totals.shipping}`;
+        document.getElementById('page-cart-tax').textContent = `₹${totals.tax.toLocaleString('en-IN')}`;
+        document.getElementById('page-cart-total').textContent = `₹${totals.total.toLocaleString('en-IN')}`;
+
+        // Handlers
+        tbody.querySelectorAll('.inc-p-qty').forEach(b => {
+          b.onclick = () => {
+            const id = b.getAttribute('data-id');
+            const item = cart.items.find(i => i.id === id);
+            if (item) { cart.updateQuantity(id, item.quantity + 1); renderCartPage(); }
+          };
+        });
+
+        tbody.querySelectorAll('.dec-p-qty').forEach(b => {
+          b.onclick = () => {
+            const id = b.getAttribute('data-id');
+            const item = cart.items.find(i => i.id === id);
+            if (item) { cart.updateQuantity(id, item.quantity - 1); renderCartPage(); }
+          };
+        });
+
+        tbody.querySelectorAll('.remove-p-btn').forEach(b => {
+          b.onclick = () => {
+            const id = b.getAttribute('data-id');
+            cart.removeItem(id);
+            renderCartPage();
+          };
+        });
+      }
+    });
+  </script>
+</body>
+</html>

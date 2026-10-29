@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — VÉRRA</title>
+  <meta name="description" content="Complete your VÉRRA botanical hair care order.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+      <div style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-forest);">
+        Demonstration Checkout
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div style="text-align: center; max-width: 640px; margin: 0 auto 40px;">
+        <span class="section-tag">Final Step</span>
+        <h1>Complete Your Ritual Order</h1>
+        <p>Enter your delivery coordinates below. All prices and inventory availability are verified directly with the server.</p>
+      </div>
+
+      <!-- Demo Banner Notice -->
+      <div class="alert alert-info" style="margin-bottom: 30px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div>
+          <strong>Demonstration Mode:</strong> No real payment will be processed. An authentic order record will be generated in MongoDB Atlas, and inventory stock will decrement automatically.
+        </div>
+      </div>
+
+      <div id="checkout-error-box" class="alert alert-danger" style="display: none;"></div>
+
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start;">
+        
+        <!-- Left: Delivery Address Form -->
+        <div class="card" style="padding: 32px;">
+          <h3 style="margin-bottom: 24px; color: var(--color-forest-dark);">1. Delivery Details</h3>
+          
+          <form id="checkout-form">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="form-group">
+                <label class="form-label" for="checkout-name">Full Name *</label>
+                <input type="text" id="checkout-name" class="form-control" placeholder="Priya Sharma" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="checkout-phone">Mobile Phone *</label>
+                <input type="tel" id="checkout-phone" class="form-control" placeholder="+91 98200 12345" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="checkout-email">Email Address (for order receipt) *</label>
+              <input type="email" id="checkout-email" class="form-control" placeholder="priya@example.com" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="checkout-street">Street Address / Apartment *</label>
+              <input type="text" id="checkout-street" class="form-control" placeholder="Flat 402, Lotus Residency, 14th Main" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+              <div class="form-group">
+                <label class="form-label" for="checkout-city">City *</label>
+                <input type="text" id="checkout-city" class="form-control" placeholder="Bengaluru" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="checkout-state">State *</label>
+                <input type="text" id="checkout-state" class="form-control" placeholder="Karnataka" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="checkout-zip">Postal Code *</label>
+                <input type="text" id="checkout-zip" class="form-control" placeholder="560001" required>
+              </div>
+            </div>
+
+            <h3 style="margin: 28px 0 16px; color: var(--color-forest-dark);">2. Payment Method</h3>
+            <div style="background: var(--color-ivory-light); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <input type="radio" id="pay-demo" name="paymentMethod" checked style="accent-color: var(--color-forest);">
+                <label for="pay-demo" style="font-weight: 600; font-size: 0.95rem; color: var(--color-forest-dark);">
+                  Demonstration Direct Settlement (Instant Confirmation)
+                </label>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-left: 24px; margin-top: 4px;">
+                Demonstration order for College Business Intelligence evaluation. Live database records will be generated.
+              </p>
+            </div>
+
+            <button type="submit" id="place-order-btn" class="btn btn-primary btn-block" style="padding: 16px 24px; font-size: 1rem;">
+              Place Demonstration Order
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Order Summary & Coupon -->
+        <div class="card" style="padding: 32px;">
+          <h3 style="margin-bottom: 20px; color: var(--color-forest-dark);">Order Summary</h3>
+          
+          <div id="checkout-items-list" style="margin-bottom: 20px; max-height: 280px; overflow-y: auto;">
+            <!-- Loaded dynamically via checkout.js -->
+          </div>
+
+          <!-- Coupon Input Form -->
+          <form id="checkout-coupon-form" style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <input type="text" id="checkout-coupon-input" class="form-control" placeholder="Promo code (e.g. VERRA10)" style="text-transform: uppercase;">
+            <button type="submit" class="btn btn-secondary btn-sm" style="white-space: nowrap;">Apply</button>
+          </form>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Subtotal:</span>
+            <span id="summary-subtotal" style="font-weight: 600;">₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Promotion Discount:</span>
+            <span id="summary-discount" style="font-weight: 600; color: var(--color-success);">-₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">Shipping:</span>
+            <span id="summary-shipping" style="font-weight: 600;">FREE</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 18px; font-size: 0.95rem;">
+            <span style="color: var(--color-text-secondary);">GST Included (5%):</span>
+            <span id="summary-tax" style="font-weight: 600;">₹0</span>
+          </div>
+
+          <div style="border-top: 1px solid var(--color-border); padding-top: 16px; display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 1.15rem; font-weight: 700; color: var(--color-forest-dark);">Total to Pay:</span>
+            <span id="summary-total" style="font-size: 1.6rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Order Confirmation Modal -->
+  <div class="modal-overlay" id="order-confirmation-modal">
+    <div class="modal-box" style="text-align: center; padding: 36px 32px;">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--color-sage-light); color: var(--color-forest); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+
+      <h2 style="font-size: 1.8rem; color: var(--color-forest-dark); margin-bottom: 8px;">Order Confirmed</h2>
+      <p style="color: var(--color-text-secondary); margin-bottom: 24px;">Thank you for embracing the VÉRRA botanical hair ritual.</p>
+
+      <div style="background: var(--color-ivory); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 20px; text-align: left; margin-bottom: 28px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: var(--color-text-secondary); font-size: 0.85rem;">Order Identifier:</span>
+          <strong id="confirm-order-number" style="color: var(--color-forest); font-family: monospace; font-size: 1rem;">VR-2026-XXXX</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: var(--color-text-secondary); font-size: 0.85rem;">Amount Recorded:</span>
+          <strong id="confirm-order-total" style="color: var(--color-forest-dark);">₹0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--color-text-secondary); font-size: 0.85rem;">Receipt Sent To:</span>
+          <span id="confirm-order-email" style="font-size: 0.85rem; font-weight: 500;">-</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="/account.html" class="btn btn-primary btn-sm">View in My Orders</a>
+        <a href="/shop.html" class="btn btn-secondary btn-sm">Continue Browsing</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. Indian Rupee (INR ₹) Pricing.</div>
+        <div><a href="/admin/index.html" style="color: var(--color-gold);">Admin Dashboard</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/api.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/cart.js"></script>
+  <script type="module" src="/js/checkout.js"></script>
+</body>
+</html>

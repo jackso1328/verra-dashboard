@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+package-lock.json
+
+# Environment Secrets
+.env
+backend/.env
+*.env.local
+
+# Backups & Data Dumps
+backups/
+backend/backups/
+*.backup.json
+*.json.gz
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Python scratch
+__pycache__/
+*.pyc

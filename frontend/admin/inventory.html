@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management — VÉRRA BI</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-header">
+      <a href="/admin/index.html">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="sidebar-logo" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-section-title">Business Intelligence</li>
+      <li class="nav-item"><a href="/admin/index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Executive Overview</a></li>
+      <li class="nav-item"><a href="/admin/sales.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Sales Analytics</a></li>
+      <li class="nav-item"><a href="/admin/products.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg> Product Performance</a></li>
+      <li class="nav-item"><a href="/admin/finance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> Financial P&L</a></li>
+      <li class="nav-item active"><a href="/admin/inventory.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg> Inventory Stock</a></li>
+      <li class="nav-item"><a href="/admin/customers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> Customer Patrons</a></li>
+      <li class="nav-item"><a href="/admin/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Reports & Export</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-profile-badge">
+        <div class="user-avatar" id="admin-sidebar-avatar">A</div>
+        <div class="user-meta">
+          <div class="user-name" id="admin-sidebar-name">Administrator</div>
+          <div class="user-role">BI Executive</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dashboard-main">
+    <header class="dashboard-topbar">
+      <div class="topbar-title"><h1>Inventory Valuation & Reorder Controls</h1></div>
+      <div class="topbar-actions">
+        <a href="/shop.html" class="btn btn-secondary btn-sm" target="_blank">Storefront</a>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+      
+      <!-- Top Stats Grid -->
+      <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 28px;">
+        <div class="kpi-card accent-sage">
+          <div class="kpi-header"><span class="kpi-title">Total Units Available</span></div>
+          <div class="kpi-value" id="inv-total-units">0</div>
+          <div class="kpi-subtext">Sum of warehouse stock</div>
+        </div>
+
+        <div class="kpi-card accent-gold">
+          <div class="kpi-header"><span class="kpi-title">Inventory Valuation (₹)</span></div>
+          <div class="kpi-value" id="inv-valuation">₹0</div>
+          <div class="kpi-subtext">Calculated at current COGS unit cost</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header"><span class="kpi-title">Low-Stock Warnings</span></div>
+          <div class="kpi-value" id="inv-low-count" style="color: var(--color-warning);">0</div>
+          <div class="kpi-subtext">Below replenishment threshold</div>
+        </div>
+      </div>
+
+      <!-- Live Stock Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div>
+            <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Botanical Inventory Levels</h3>
+            <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Real-time stock quantities and reorder thresholds</span>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="data-table" style="margin: 0;">
+            <thead>
+              <tr>
+                <th>Formulation</th>
+                <th>In Stock</th>
+                <th>Reorder Level</th>
+                <th>Unit Cost</th>
+                <th>Valuation</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-stock-tbody">
+              <!-- Dynamically populated via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Stock Movement Log Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div>
+            <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Inventory Movement Audit Trail</h3>
+            <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Automated log of sales deductions, restocks, and returns</span>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="data-table" style="margin: 0;">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Formulation</th>
+                <th>Type</th>
+                <th>Change</th>
+                <th>New Stock</th>
+                <th>Audit Reason</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-movements-tbody">
+              <!-- Dynamically populated via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { adminApp } from '/js/admin.js';
+    document.addEventListener('DOMContentLoaded', () => adminApp.init('inventory'));
+  </script>
+</body>
+</html>

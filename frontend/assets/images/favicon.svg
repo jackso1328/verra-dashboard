@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="16" fill="#284B3E" />
+  <circle cx="32" cy="32" r="24" fill="#F8F6F0" stroke="#C6AA72" stroke-width="1.5" />
+  <text x="32" y="41" font-family="'Cinzel', 'Cormorant Garamond', serif" font-size="26" font-weight="700" fill="#284B3E" text-anchor="middle">V</text>
+  <circle cx="32" cy="18" r="2.5" fill="#C6AA72"/>
+</svg>

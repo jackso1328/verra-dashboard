@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Profile & Orders — VÉRRA</title>
+  <meta name="description" content="Manage your VÉRRA client profile and view past botanical hair ritual orders.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="/shop.html" class="nav-link">The Collection</a></li>
+          <li><a href="/account.html" class="nav-link active">My Orders</a></li>
+          <li><a href="/cart.html" class="nav-link">Bag</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="account-logout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      
+      <div style="margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span class="section-tag">Client Sanctuary</span>
+          <h1 id="account-user-name">Welcome</h1>
+          <p id="account-user-email" style="color: var(--color-taupe); font-weight: 500;"></p>
+        </div>
+        <a href="/shop.html" class="btn btn-primary btn-sm">Discover New Rituals</a>
+      </div>
+
+      <!-- Account Profile Cards -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px;">
+        <div class="card" style="padding: 24px;">
+          <h3 style="font-size: 1.1rem; color: var(--color-forest-dark); margin-bottom: 12px;">Contact Coordinates</h3>
+          <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Phone:</strong> <span id="account-user-phone">Loading...</span></p>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Direct contact used for botanical delivery concierge.</p>
+        </div>
+
+        <div class="card" style="padding: 24px;">
+          <h3 style="font-size: 1.1rem; color: var(--color-forest-dark); margin-bottom: 12px;">Saved Delivery Address</h3>
+          <p id="account-user-address" style="font-size: 0.9rem; line-height: 1.5; color: var(--color-text-primary);">Loading address...</p>
+        </div>
+      </div>
+
+      <!-- Order History Section -->
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 1.15rem; color: var(--color-forest-dark); margin: 0;">Your Ritual Order History</h3>
+          <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Amounts shown in INR (₹)</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="data-table" style="margin: 0;">
+            <thead>
+              <tr>
+                <th>Order Reference</th>
+                <th>Date</th>
+                <th>Botanical Items</th>
+                <th>Total Paid</th>
+                <th>Status</th>
+                <th>Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="account-orders-list">
+              <!-- Loaded dynamically via account.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Order Detail / Receipt Modal -->
+  <div class="modal-overlay" id="account-order-modal">
+    <div class="modal-box" style="max-width: 580px;">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin: 0; font-size: 1.2rem; color: var(--color-forest-dark);">Order Receipt</h3>
+          <span id="modal-order-number" style="font-size: 0.85rem; color: var(--color-forest); font-family: monospace; font-weight: 700;">VR-2026-XXXX</span>
+        </div>
+        <button id="close-account-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.85rem; color: var(--color-text-secondary);">
+          <div>Date: <span id="modal-order-date"></span></div>
+          <div>Status: <span id="modal-order-status" class="badge badge-forest"></span></div>
+        </div>
+
+        <div style="background: var(--color-ivory); border-radius: var(--radius-xs); padding: 12px; margin-bottom: 20px; font-size: 0.85rem;">
+          <strong>Delivered to:</strong> <span id="modal-order-address"></span>
+        </div>
+
+        <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--color-forest-dark);">Items Purchased</h4>
+        <div id="modal-order-items" style="border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 16px;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem;">
+          <span style="color: var(--color-text-secondary);">Subtotal:</span>
+          <span id="modal-order-subtotal"></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem;">
+          <span style="color: var(--color-text-secondary);">Discount:</span>
+          <span id="modal-order-discount" style="color: var(--color-success);"></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem;">
+          <span style="color: var(--color-text-secondary);">Shipping:</span>
+          <span id="modal-order-shipping"></span>
+        </div>
+        <div style="border-top: 1px solid var(--color-border); padding-top: 10px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--color-forest-dark);">
+          <span>Total:</span>
+          <span id="modal-order-total"></span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('account-order-modal').classList.remove('active')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. Indian Rupee (INR ₹) Pricing.</div>
+        <div><a href="/shop.html" style="color: var(--color-gold);">Return to Shop</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/api.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/account.js"></script>
+</body>
+</html>

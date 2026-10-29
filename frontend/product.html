@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botanical Formulation — VÉRRA</title>
+  <meta name="description" content="Product detail and botanical hair care ritual for VÉRRA formulations.">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/storefront.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="/shop.html" class="nav-link">The Collection</a></li>
+          <li><a href="/index.html#philosophy" class="nav-link">Our Philosophy</a></li>
+          <li><a href="/index.html#rituals" class="nav-link">Hair Rituals</a></li>
+          <li><a href="/cart.html" class="nav-link">Bag</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="nav-auth-state">
+          <a href="/login.html" class="nav-link">Sign In</a>
+        </div>
+        <button class="icon-btn open-cart-btn" aria-label="Open Shopping Bag">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span class="cart-count" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container" id="product-detail-container">
+      <div style="text-align: center; padding: 60px 0;">
+        <div class="spinner"></div>
+        <p style="margin-top: 16px; color: var(--color-forest);">Unveiling botanical formulation...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 VÉRRA Botanical Rituals Inc. All rights reserved. Indian Rupee (INR ₹) Pricing.</div>
+        <div><a href="/shop.html" style="color: var(--color-gold);">Return to Collection</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Bag Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3 style="font-size: 1.2rem; margin: 0; color: var(--color-forest-dark);">Your Ritual Bag</h3>
+      <button id="close-cart-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-secondary);">&times;</button>
+    </div>
+    <div class="cart-drawer-body" id="cart-drawer-items"></div>
+    <div class="cart-drawer-footer">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-size: 0.95rem; font-weight: 600;">Subtotal:</span>
+        <span id="cart-drawer-subtotal" style="font-size: 1.25rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
+      </div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Proceed to Checkout</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { cart } from '/js/cart.js';
+    import { auth } from '/js/auth.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      auth.updateNavUI();
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('id');
+      const container = document.getElementById('product-detail-container');
+
+      if (!productId) {
+        window.location.href = '/shop.html';
+        return;
+      }
+
+      const SAMPLE_PRODUCTS = [
+        {
+          _id: "preview_rro_050",
+          name: "Root Revival Oil",
+          sku: "VR-RRO-050",
+          category: "Scalp Rituals",
+          sizeMl: 50,
+          price: 1299,
+          description: "An invigorating botanical scalp treatment infused with steam-distilled Mediterranean rosemary, cold-pressed jojoba, and peppermint leaf to nourish dormant follicles and promote hair vitality.",
+          keyIngredients: ["Rosemary Leaf Extract", "Cold-Pressed Jojoba", "Peppermint Essential Oil", "Pumpkin Seed Oil"],
+          ritualDirections: "Dispense 1-2 full pipettes onto fingertips. Part hair and massage deeply into dry scalp using circular motions. Leave on for 45 minutes or overnight before shampooing.",
+          image: "assets/images/product_root_revival.jpg",
+          stockQuantity: 145
+        },
+        {
+          _id: "preview_sel_050",
+          name: "Silk Elixir",
+          sku: "VR-SEL-050",
+          category: "Smoothing Rituals",
+          sizeMl: 50,
+          price: 1599,
+          description: "A weightless botanical glossing nectar crafted from Moroccan cold-pressed argan, camellia seed, and evening primrose to banish frizz and restore mirror-like shine.",
+          keyIngredients: ["Virgin Moroccan Argan Oil", "Camellia Japonica Seed", "Evening Primrose Oil", "Vitamin E Acetate"],
+          ritualDirections: "Warm 2-3 drops between palms. Smooth through damp mid-lengths to ends before blow-drying, or apply as a finishing touch to dry hair for glass-like radiance.",
+          image: "assets/images/product_silk_elixir.jpg",
+          stockQuantity: 88
+        },
+        {
+          _id: "preview_bno_100",
+          name: "Botanical Nourish Oil",
+          sku: "VR-BNO-100",
+          category: "Nourishing Rituals",
+          sizeMl: 100,
+          price: 1099,
+          description: "An ancient restorative blend uniting sun-dried amla berries and false daisy (bhringraj) with rich sesame and sweet almond oils to fortify hair strands.",
+          keyIngredients: ["Organic Amla Berry Extract", "Eclipta Alba (Bhringraj)", "Cold-Pressed Black Sesame", "Sweet Almond Oil"],
+          ritualDirections: "Warm 1-2 tablespoons in a bowl. Thoroughly coat hair strands from roots to tips. Wrap in a warm towel for 30 minutes for an intensive botanical replenishment ritual.",
+          image: "assets/images/product_botanical_nourish.jpg",
+          stockQuantity: 110
+        },
+        {
+          _id: "preview_cst_100",
+          name: "Coco Silk Treatment",
+          sku: "VR-CST-100",
+          category: "Pre-Wash Rituals",
+          sizeMl: 100,
+          price: 899,
+          description: "A deeply conditioning pre-shampoo oil elixir made from virgin unrefined coconut, marula, and avocado oil that penetrates the hair cortex to prevent protein loss.",
+          keyIngredients: ["Virgin Coconut Oil", "Cold-Pressed Marula Oil", "Persea Gratissima (Avocado)", "Hibiscus Flower Infusion"],
+          ritualDirections: "Apply generously to dry hair 20 minutes prior to bathing. Detangle gently with a wide-tooth comb, then rinse with lukewarm water followed by your botanical shampoo.",
+          image: "assets/images/product_coco_silk.jpg",
+          stockQuantity: 19
+        }
+      ];
+
+      try {
+        let product = null;
+        let reviews = [];
+        let related = [];
+
+        try {
+          const res = await api.get(`products/${productId}`);
+          if (res.success && res.data) {
+            product = res.data;
+            reviews = res.reviews || [];
+            related = res.relatedProducts || [];
+          }
+        } catch (e) {
+          // Fallback to sample preview product
+        }
+
+        if (!product) {
+          product = SAMPLE_PRODUCTS.find(p => p._id === productId || p.sku === productId) || SAMPLE_PRODUCTS[0];
+          reviews = [
+            { rating: 5, authorName: "Priya S.", headline: "Sublime scalp nourishment", comment: "The botanical aroma and pure texture are unmatched. Truly luxury hair care." },
+            { rating: 5, authorName: "Ananya I.", headline: "Visible shine and softness", comment: "Leaves my hair feeling like liquid silk without any greasy residue." }
+          ];
+          related = SAMPLE_PRODUCTS.filter(p => p._id !== product._id).slice(0, 3);
+        }
+
+        document.title = `${product.name} — VÉRRA Luxury Hair Care`;
+
+        container.innerHTML = `
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-bottom: 70px; align-items: start;">
+            <!-- Left: High-Res Photography -->
+            <div style="border-radius: var(--radius-md); overflow: hidden; background: #F6F4EE; border: 1px solid var(--color-border); box-shadow: var(--shadow-card);">
+              <img src="/${product.image}" alt="${product.name}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+            </div>
+
+            <!-- Right: Formulation Details -->
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span class="badge badge-forest">${product.category}</span>
+                <span style="font-size:0.8rem; color:var(--color-taupe); letter-spacing:0.08em; text-transform:uppercase;">SKU: ${product.sku}</span>
+              </div>
+
+              <h1 style="font-size: 2.4rem; color: var(--color-forest-dark); margin-bottom: 12px;">${product.name}</h1>
+              
+              <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px;">
+                <span style="font-size: 2rem; font-family: var(--font-serif); font-weight: 700; color: var(--color-forest);">₹${product.price.toLocaleString('en-IN')}</span>
+                <span style="font-size: 0.9rem; color: var(--color-text-secondary);">${product.sizeMl} ml • First Cold-Press</span>
+                <span class="badge ${product.stockQuantity > 10 ? 'badge-success' : 'badge-warning'}">
+                  ${product.stockQuantity > 0 ? `${product.stockQuantity} in stock` : 'Out of Stock'}
+                </span>
+              </div>
+
+              <p style="font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); margin-bottom: 32px;">
+                ${product.description}
+              </p>
+
+              <!-- Add to Bag Controls -->
+              <div style="display: flex; gap: 16px; margin-bottom: 40px; align-items: center;">
+                <div class="qty-control" style="padding: 4px;">
+                  <button class="qty-btn" id="p-dec-qty" style="width:36px; height:36px;">-</button>
+                  <span class="qty-val" id="p-qty-val" style="width:40px; font-size:1rem;">1</span>
+                  <button class="qty-btn" id="p-inc-qty" style="width:36px; height:36px;">+</button>
+                </div>
+                <button class="btn btn-primary" id="p-add-to-cart-btn" style="flex: 1; padding: 14px 28px;">
+                  Add Formulation to Ritual Bag
+                </button>
+              </div>
+
+              <!-- Accordion Details -->
+              <div style="border-top: 1px solid var(--color-border); padding-top: 24px;">
+                <h4 style="font-size: 1rem; margin-bottom: 12px; color: var(--color-forest);">Active Botanical Ingredients</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;">
+                  ${product.keyIngredients.map(ing => `<span class="badge badge-gold" style="font-size:0.8rem;">${ing}</span>`).join('')}
+                </div>
+
+                <h4 style="font-size: 1rem; margin-bottom: 8px; color: var(--color-forest);">Application Ritual</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6; color: var(--color-text-secondary);">${product.ritualDirections}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Reviews Section -->
+          <div style="border-top: 1px solid var(--color-border); padding-top: 50px; margin-bottom: 60px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px;">
+              <div>
+                <span class="section-tag">Ritual Testimonials</span>
+                <h2>Client Experiences (${reviews.length})</h2>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="alert('Review submission is available to verified order patrons.')">Share Your Ritual</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+              ${reviews.length > 0 ? reviews.map(r => `
+                <div class="card" style="padding: 24px;">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <div style="color:var(--color-gold); font-size:1.1rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                    <span class="badge badge-forest" style="font-size:0.7rem;">Verified Patron</span>
+                  </div>
+                  <h4 style="font-size: 1rem; margin-bottom: 8px; color: var(--color-forest-dark);">${r.headline}</h4>
+                  <p style="font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 12px;">"${r.comment}"</p>
+                  <div style="font-size: 0.78rem; color: var(--color-taupe); font-weight: 600;">— ${r.authorName}</div>
+                </div>
+              `).join('') : '<p style="color:var(--color-text-secondary);">Be the first to review this formulation.</p>'}
+            </div>
+          </div>
+
+          <!-- Related Formulations -->
+          ${related.length > 0 ? `
+            <div style="border-top: 1px solid var(--color-border); padding-top: 50px;">
+              <div class="section-header" style="margin-bottom: 32px;">
+                <span class="section-tag">Harmonious Pairings</span>
+                <h2>Complete Your Hair Ritual</h2>
+              </div>
+              <div class="product-grid">
+                ${related.map(p => `
+                  <div class="product-card" onclick="window.location.href='/product.html?id=${p._id}'" style="cursor:pointer;">
+                    <div class="product-image-container">
+                      <img src="/${p.image}" alt="${p.name}" class="product-image" onerror="this.src='/assets/images/hero_editorial.jpg'">
+                      <span class="product-badge-overlay badge badge-forest">${p.category}</span>
+                    </div>
+                    <div class="product-content">
+                      <div class="product-volume">${p.sizeMl} ml</div>
+                      <h3 class="product-name"><a href="/product.html?id=${p._id}">${p.name}</a></h3>
+                      <div class="product-footer">
+                        <div class="product-price">₹${p.price.toLocaleString('en-IN')}</div>
+                        <a href="/product.html?id=${p._id}" class="btn btn-secondary btn-sm">View Formulation</a>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        `;
+
+        // Handle Quantity & Add to Cart
+        let currentQty = 1;
+        const qtyVal = document.getElementById('p-qty-val');
+        const incBtn = document.getElementById('p-inc-qty');
+        const decBtn = document.getElementById('p-dec-qty');
+        const addBtn = document.getElementById('p-add-to-cart-btn');
+
+        if (incBtn) incBtn.onclick = () => { currentQty++; qtyVal.textContent = currentQty; };
+        if (decBtn) decBtn.onclick = () => { if (currentQty > 1) { currentQty--; qtyVal.textContent = currentQty; } };
+
+        if (addBtn) {
+          addBtn.onclick = () => {
+            cart.addItem({
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              sizeMl: product.sizeMl,
+              image: product.image,
+              sku: product.sku,
+              stockQuantity: product.stockQuantity
+            }, currentQty);
+          };
+        }
+
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-danger">Error loading product details: ${err.message}</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
