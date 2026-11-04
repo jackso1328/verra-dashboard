@@ -49,26 +49,32 @@ class AuthManager {
     return res;
   }
 
+  getBasePath() {
+    return window.location.pathname.includes('/admin') ? '../' : './';
+  }
+
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-    window.location.href = '/login.html';
+    window.location.href = `${this.getBasePath()}login.html`;
   }
 
   // Route guard: Redirect if not logged in
-  requireAuth(redirectUrl = '/login.html') {
+  requireAuth(redirectUrl = null) {
+    const target = redirectUrl || `${this.getBasePath()}login.html`;
     if (!this.isAuthenticated()) {
-      window.location.href = `${redirectUrl}?redirect=${encodeURIComponent(window.location.pathname)}`;
+      window.location.href = `${target}?redirect=${encodeURIComponent(window.location.pathname)}`;
       return false;
     }
     return true;
   }
 
   // Admin route guard: Redirect if not admin
-  requireAdmin(redirectUrl = '/login.html') {
+  requireAdmin(redirectUrl = null) {
+    const target = redirectUrl || `${this.getBasePath()}login.html`;
     if (!this.isAuthenticated() || !this.isAdmin()) {
       alert('Access Restricted. You must sign in with an Administrator account.');
-      window.location.href = `${redirectUrl}?admin=true&redirect=${encodeURIComponent(window.location.pathname)}`;
+      window.location.href = `${target}?admin=true&redirect=${encodeURIComponent(window.location.pathname)}`;
       return false;
     }
     return true;
@@ -77,6 +83,7 @@ class AuthManager {
   updateNavUI() {
     const accountLinks = document.querySelectorAll('.nav-auth-state');
     const user = this.getUser();
+    const base = this.getBasePath();
 
     accountLinks.forEach(el => {
       if (user) {
@@ -84,8 +91,8 @@ class AuthManager {
           <div class="user-nav-dropdown">
             <span class="user-nav-name">${user.name.split(' ')[0]}</span>
             <div class="user-dropdown-menu">
-              ${user.role === 'admin' ? '<a href="/admin/index.html">BI Admin Dashboard</a>' : ''}
-              <a href="/account.html">My Orders</a>
+              ${user.role === 'admin' ? `<a href="${base}admin/index.html">BI Admin Dashboard</a>` : ''}
+              <a href="${base}account.html">My Orders</a>
               <a href="#" id="nav-logout-btn">Sign Out</a>
             </div>
           </div>
@@ -98,7 +105,7 @@ class AuthManager {
           });
         }
       } else {
-        el.innerHTML = `<a href="/login.html" class="nav-link">Sign In</a>`;
+        el.innerHTML = `<a href="${base}login.html" class="nav-link">Sign In</a>`;
       }
     });
   }

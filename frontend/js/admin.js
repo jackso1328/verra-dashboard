@@ -389,7 +389,7 @@ class AdminController {
             <tr>
               <td>
                 <div style="display:flex; align-items:center; gap:12px;">
-                  <img src="/${p.image}" alt="${p.name}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+                  <img src="../${p.image}" alt="${p.name}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;" onerror="this.src='../assets/images/hero_editorial.jpg'">
                   <div>
                     <strong>${p.name}</strong>
                     <div style="font-size:0.75rem; color:var(--color-taupe);">${p.sku} • ${p.sizeMl}ml</div>
@@ -487,7 +487,7 @@ class AdminController {
               <tr>
                 <td>
                   <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="/${p.image}" alt="${p.name}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+                    <img src="../${p.image}" alt="${p.name}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;" onerror="this.src='../assets/images/hero_editorial.jpg'">
                     <div><strong>${p.name}</strong> <span style="font-size:0.75rem; color:var(--color-taupe);">(${p.sku})</span></div>
                   </div>
                 </td>

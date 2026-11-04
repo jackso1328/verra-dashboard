@@ -206,7 +206,7 @@ class CartManager {
         <div style="text-align: center; padding: 48px 16px;">
           <p style="font-size: 1.1rem; color: var(--color-forest-dark); margin-bottom: 8px;">Your ritual bag is empty</p>
           <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 24px;">Discover our botanical hair oils and elevate your hair care ritual.</p>
-          <a href="/shop.html" class="btn btn-secondary btn-sm" onclick="verraCart.closeDrawer()">Explore The Collection</a>
+          <a href="shop.html" class="btn btn-secondary btn-sm" onclick="verraCart.closeDrawer()">Explore The Collection</a>
         </div>
       `;
       if (subtotalEl) subtotalEl.textContent = '₹0';
@@ -218,7 +218,7 @@ class CartManager {
 
     container.innerHTML = this.items.map(item => `
       <div class="cart-item" data-id="${item.id}">
-        <img src="/${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='/assets/images/hero_editorial.jpg'">
+        <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='assets/images/hero_editorial.jpg'">
         <div class="cart-item-info">
           <div class="cart-item-title">${item.name}</div>
           <div style="font-size: 0.75rem; color: var(--color-taupe); margin-bottom: 4px;">${item.sizeMl} ml</div>

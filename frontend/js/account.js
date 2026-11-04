@@ -59,7 +59,7 @@ export const initAccount = async () => {
           <td colspan="6" style="text-align: center; padding: 48px 20px;">
             <p style="font-size: 1.1rem; color: var(--color-forest-dark); margin-bottom: 6px;">No orders placed yet</p>
             <p style="color: var(--color-text-secondary); margin-bottom: 20px;">Experience the luxury of our botanical formulas.</p>
-            <a href="/shop.html" class="btn btn-primary btn-sm">Discover Collection</a>
+            <a href="shop.html" class="btn btn-primary btn-sm">Discover Collection</a>
           </td>
         </tr>
       `;
@@ -146,7 +146,7 @@ export const initAccount = async () => {
           wishlistGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--color-text-secondary);">
               <p>You haven't saved any botanical formulations to your wishlist yet.</p>
-              <a href="/shop.html" class="btn btn-secondary btn-sm" style="margin-top: 10px;">Browse The Collection</a>
+              <a href="shop.html" class="btn btn-secondary btn-sm" style="margin-top: 10px;">Browse The Collection</a>
             </div>
           `;
           return;
@@ -154,13 +154,13 @@ export const initAccount = async () => {
 
         wishlistGrid.innerHTML = items.map(p => `
           <div class="product-card" data-id="${p.id || p._id}">
-            <div class="product-image-container" onclick="window.location.href='/product.html?id=${p.id || p._id}'">
-              <img src="/${p.image}" alt="${p.name}" class="product-image" onerror="this.src='/assets/images/hero_editorial.jpg'">
+            <div class="product-image-container" onclick="window.location.href='product.html?id=${p.id || p._id}'">
+              <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='assets/images/hero_editorial.jpg'">
               <button class="remove-wishlist-btn" data-id="${p.id || p._id}" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.9); border:none; width:30px; height:30px; border-radius:50%; font-size:1.1rem; cursor:pointer; color:var(--color-text-muted);">&times;</button>
             </div>
             <div class="product-content">
               <div class="product-volume">${p.sizeMl} ml</div>
-              <h4 class="product-name"><a href="/product.html?id=${p.id || p._id}">${p.name}</a></h4>
+              <h4 class="product-name"><a href="product.html?id=${p.id || p._id}">${p.name}</a></h4>
               <div class="product-footer">
                 <div class="product-price">₹${p.price.toLocaleString('en-IN')}</div>
                 <button class="btn btn-primary btn-sm add-wishlist-to-cart-btn" data-product='${JSON.stringify(p)}'>Add to Bag</button>

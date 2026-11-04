@@ -5,32 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Ritual Bag — VÉRRA</title>
   <meta name="description" content="View items in your VÉRRA shopping bag.">
-  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-  <link rel="stylesheet" href="/css/variables.css">
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/storefront.css">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/storefront.css">
 </head>
 <body>
 
   <!-- Site Navigation -->
   <header class="site-header">
     <div class="container nav-container">
-      <a href="/index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
-        <img src="/assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='/assets/images/verra_logo.png'">
+      <a href="index.html" class="brand-logo-wrap" title="VÉRRA Luxury Botanical Haircare">
+        <img src="assets/images/verra_nav_logo.png" alt="VÉRRA" class="brand-logo-img" onerror="this.src='assets/images/verra_logo.png'">
       </a>
 
       <nav aria-label="Main Navigation">
         <ul class="nav-links">
-          <li><a href="/shop.html" class="nav-link">The Collection</a></li>
-          <li><a href="/index.html#philosophy" class="nav-link">Our Philosophy</a></li>
-          <li><a href="/index.html#rituals" class="nav-link">Hair Rituals</a></li>
-          <li><a href="/cart.html" class="nav-link active">Bag</a></li>
+          <li><a href="shop.html" class="nav-link">The Collection</a></li>
+          <li><a href="index.html#philosophy" class="nav-link">Our Philosophy</a></li>
+          <li><a href="index.html#rituals" class="nav-link">Hair Rituals</a></li>
+          <li><a href="cart.html" class="nav-link active">Bag</a></li>
         </ul>
       </nav>
 
       <div class="nav-actions">
         <div class="nav-auth-state">
-          <a href="/login.html" class="nav-link">Sign In</a>
+          <a href="login.html" class="nav-link">Sign In</a>
         </div>
       </div>
     </div>
@@ -91,8 +91,8 @@
             <span id="page-cart-total" style="font-size: 1.5rem; font-weight: 700; color: var(--color-forest); font-family: var(--font-serif);">₹0</span>
           </div>
 
-          <a href="/checkout.html" class="btn btn-primary btn-block" style="margin-bottom: 12px;">Proceed to Checkout</a>
-          <a href="/shop.html" class="btn btn-secondary btn-block btn-sm">Continue Shopping</a>
+          <a href="checkout.html" class="btn btn-primary btn-block" style="margin-bottom: 12px;">Proceed to Checkout</a>
+          <a href="shop.html" class="btn btn-secondary btn-block btn-sm">Continue Shopping</a>
         </div>
       </div>
     </div>
@@ -102,7 +102,7 @@
     <div class="container">
       <div class="footer-bottom">
         <div>© 2026 VÉRRA Botanical Rituals Inc. All rights reserved. Indian Rupee (INR ₹) Pricing.</div>
-        <div><a href="/shop.html" style="color: var(--color-gold);">Return to Collection</a></div>
+        <div><a href="shop.html" style="color: var(--color-gold);">Return to Collection</a></div>
       </div>
     </div>
   </footer>
@@ -125,7 +125,7 @@
             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
               <h2 style="margin-bottom: 12px;">Your ritual bag is empty</h2>
               <p style="color: var(--color-text-secondary); margin-bottom: 24px;">Discover our cold-pressed botanical hair oils.</p>
-              <a href="/shop.html" class="btn btn-primary">Explore The Collection</a>
+              <a href="shop.html" class="btn btn-primary">Explore The Collection</a>
             </div>
           `;
           return;
@@ -135,7 +135,7 @@
           <tr>
             <td>
               <div style="display:flex; align-items:center; gap:16px;">
-                <img src="/${item.image}" alt="${item.name}" style="width:54px; height:54px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+                <img src="${item.image}" alt="${item.name}" style="width:54px; height:54px; object-fit:cover; border-radius:4px;" onerror="this.src='assets/images/hero_editorial.jpg'">
                 <div>
                   <strong style="color:var(--color-forest-dark); font-size:1rem;">${item.name}</strong>
                   <div style="font-size:0.75rem; color:var(--color-taupe);">${item.sizeMl} ml • ${item.sku}</div>

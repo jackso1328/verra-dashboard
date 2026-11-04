@@ -102,3 +102,20 @@ class ApiClient {
 }
 
 export const api = new ApiClient(API_BASE_URL);
+
+// Global helper to configure Cloud API URL on GitHub Pages or local testing
+if (typeof window !== 'undefined') {
+  window.setVerraApiUrl = (url) => {
+    if (!url) {
+      const current = localStorage.getItem('verra_api_url') || API_BASE_URL;
+      const input = prompt('Enter your Cloud Backend API URL (e.g. https://verra-api.onrender.com/api):', current);
+      if (input) {
+        localStorage.setItem('verra_api_url', input.trim().replace(/\/$/, ''));
+        window.location.reload();
+      }
+    } else {
+      localStorage.setItem('verra_api_url', url.trim().replace(/\/$/, ''));
+      window.location.reload();
+    }
+  };
+}

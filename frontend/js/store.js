@@ -230,8 +230,8 @@ export const initStore = async () => {
 
       return `
         <div class="product-card" data-id="${product._id}">
-          <div class="product-image-container" onclick="window.location.href='/product.html?id=${product._id}'">
-            <img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='/assets/images/hero_editorial.jpg'">
+          <div class="product-image-container" onclick="window.location.href='product.html?id=${product._id}'">
+            <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='assets/images/hero_editorial.jpg'">
             ${isPreviewItem ? '<span class="product-badge-overlay badge badge-gold">Catalog Preview</span>' : getProductBadge(product)}
             <button class="wishlist-toggle-btn ${isSaved ? 'active' : ''}" data-id="${product._id}" title="${isSaved ? 'Remove from Saved' : 'Save to Ritual Wishlist'}" onclick="event.stopPropagation();">
               ${isSaved
@@ -243,7 +243,7 @@ export const initStore = async () => {
           <div class="product-content">
             <div class="product-volume">${product.sizeMl} ml • Cold-Pressed Botanical</div>
             <h3 class="product-name">
-              <a href="/product.html?id=${product._id}">${product.name}</a>
+              <a href="product.html?id=${product._id}">${product.name}</a>
             </h3>
             <p class="product-desc">${product.description}</p>
             <div class="product-footer">

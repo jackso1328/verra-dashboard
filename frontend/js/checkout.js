@@ -57,7 +57,7 @@ export const initCheckout = () => {
 
       if (cart.items.length === 0) {
         alert('Your ritual bag is empty. Please add items before checkout.');
-        window.location.href = '/shop.html';
+        window.location.href = 'shop.html';
         return;
       }
 
@@ -131,7 +131,7 @@ export const initCheckout = () => {
     const modal = document.getElementById('order-confirmation-modal');
     if (!modal) {
       alert(`Order Placed Successfully! Your Order Number is: ${order.orderNumber}`);
-      window.location.href = '/account.html';
+      window.location.href = 'account.html';
       return;
     }
 
@@ -168,7 +168,7 @@ export const renderCheckoutSummary = () => {
   summaryContainer.innerHTML = cart.items.map(item => `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--color-border-subtle);">
       <div style="display:flex; gap:12px; align-items:center;">
-        <img src="/${item.image}" alt="${item.name}" style="width:48px; height:48px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/images/hero_editorial.jpg'">
+        <img src="${item.image}" alt="${item.name}" style="width:48px; height:48px; object-fit:cover; border-radius:4px;" onerror="this.src='assets/images/hero_editorial.jpg'">
         <div>
           <div style="font-weight:600; font-size:0.9rem; color:var(--color-forest-dark);">${item.name}</div>
           <div style="font-size:0.75rem; color:var(--color-taupe);">${item.sizeMl} ml × ${item.quantity}</div>
